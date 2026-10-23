@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <!-- !for css design -->
+
+
+    <link rel="stylesheet" href="sidebar.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="teams.css">
+    <link rel="stylesheet" href="players.css">
+    <link rel="stylesheet" href="">
+    <link rel="stylesheet" href="">
+    <link rel="stylesheet" href="">
+    <link rel="stylesheet" href="">
+    <link rel="stylesheet" href="">
+
+    <!-- !link with font aowsome -->
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css">
+
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+</head>
+
+<body>
+    <div class="main-box">
+
+        <!-- Mobile Header -->
+<div class="mobile-header">
+    <label for="check" class="mobile-menu-btn">
+        <i class="fas fa-bars"></i>
+    </label>
+
+    <span class="mobile-page-title">Dashboard</span>
+</div>
+
+        <input type="checkbox" id="check">
+        <div class="btn_one">
+            <label for="check">
+                <i class="fas fa-bars"></i>
+            </label>
+        </div>
+
+        <div class="sidebar_menu">
+            <div class="logo">
+                <a href="#">MATCHCRAFT</a>
+            </div>
+
+            <div class="btn_two">
+                <label for="check">
+                    <i class="fas fa-times"></i>
+                </label>
+            </div>
+
+            <div class="menu">
+                <ul>
+                    <li>
+                        <a href="#" data-page="dashboard">
+                            <i class="fas fa-house"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="#" data-page="tournaments">
+                            <i class="fas fa-trophy"></i>
+                            <span>Tournaments & Seasons</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="#" data-page="teams">
+                            <i class="fas fa-shield-halved"></i>
+                            <span>Teams & Squads</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="#" data-page="players">
+                            <i class="fas fa-users"></i>
+                            <span>Players</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="#" data-page="matches">
+                            <i class="fas fa-futbol"></i>
+                            <span>Matches & Live Score</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="#" data-page="fixtures">
+                            <i class="fas fa-calendar-days"></i>
+                            <span>Fixtures & Results</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="#" data-page="standings">
+                            <i class="fas fa-list-ol"></i>
+                            <span>Standings & Brackets</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="#" data-page="statistics">
+                            <i class="fas fa-chart-column"></i>
+                            <span>Statistics & Awards</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="#" data-page="help">
+                            <i class="fas fa-circle-question"></i>
+                            <span>Help & About</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="social_media">
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+            </div>
+
+        </div>
+
+
+
+        <!-- !MATCHCRAFT Dashboard Start -->
+
+        <main class="dashboard-content" id="dashboard">
+
+            <header class="dashboard-header">
+                <div>
+                    <p class="dashboard-eyebrow">WELCOME TO MATCHCRAFT</p>
+                    <h1>Football Dashboard</h1>
+                    <p class="dashboard-subtitle">
+                        Manage your leagues, teams and matches in one place.
+                    </p>
+                </div>
+
+                <div class="dashboard-date">
+                    <i class="fas fa-calendar-days"></i>
+                    <span>League Overview</span>
+                </div>
+            </header>
+
+            <!-- Dashboard Summary Cards -->
+            <section class="dashboard-stats">
+
+                <article class="stat-card">
+                    <div class="stat-icon stat-purple">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div>
+                        <p>Total Tournaments</p>
+                        <h2 id="totalTournaments">00</h2>
+                        <span>All competitions</span>
+                    </div>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-icon stat-green">
+                        <i class="fas fa-shield-halved"></i>
+                    </div>
+                    <div>
+                        <p>Total Teams</p>
+                        <h2 id="totalTeams">00</h2>
+                        <span>Registered teams</span>
+                    </div>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-icon stat-blue">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div>
+                        <p>Total Players</p>
+                        <h2 id="totalPlayers">00</h2>
+                        <span>Registered players</span>
+                    </div>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-icon stat-orange">
+                        <i class="fas fa-futbol"></i>
+                    </div>
+                    <div>
+                        <p>Total Matches</p>
+                        <h2 id="totalMatches">00</h2>
+                        <span>Scheduled matches</span>
+                    </div>
+                </article>
+
+            </section>
+
+            <!-- Quick Actions -->
+            <section class="dashboard-panel">
+                <div class="panel-heading">
+                    <div>
+                        <h2>Quick Actions</h2>
+                        <p>Quick access to your football management tools.</p>
+                    </div>
+                </div>
+
+                <div class="quick-actions">
+                    <button type="button" class="quick-action">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>Create Tournament</span>
+                    </button>
+
+                    <button type="button" class="quick-action">
+                        <i class="fas fa-shield-halved"></i>
+                        <span>Add Team</span>
+                    </button>
+
+                    <button type="button" class="quick-action">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Add Player</span>
+                    </button>
+
+                    <button type="button" class="quick-action">
+                        <i class="fas fa-calendar-plus"></i>
+                        <span>Schedule Match</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Recent Matches -->
+            <section class="dashboard-panel">
+                <div class="panel-heading">
+                    <div>
+                        <h2>Recent Matches</h2>
+                        <p>Your latest match results will appear here.</p>
+                    </div>
+                    <span class="panel-tag">MATCH CENTER</span>
+                </div>
+
+                <div class="empty-state">
+                    <i class="fas fa-futbol"></i>
+                    <h3>No Matches Yet</h3>
+                    <p>Create a tournament and schedule your first match.</p>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- *MATCHCRAFT Dashboard End -->
+
+
+        <!-- MATCHCRAFT - Tournaments Section -->
+<section class="tournaments-content" id="tournaments" hidden>
+    <header class="tournaments-header">
+        <div>
+            <p class="dashboard-eyebrow">MATCHCRAFT MANAGEMENT</p>
+            <h1>Tournaments &amp; Seasons</h1>
+            <p class="dashboard-subtitle">
+                Create and manage your football competitions.
+            </p>
+        </div>
+        <button type="button" id="showTournamentForm" class="tournament-add-btn">
+            <i class="fas fa-plus"></i>
+            Create Tournament
+        </button>
+    </header>
+
+    <section class="tournament-form-panel" id="tournamentFormPanel" hidden>
+        <h2>Create New Tournament</h2>
+
+        <form id="tournamentForm">
+            <div class="tournament-form-grid">
+                <label>
+                    Tournament Name
+                    <input type="text" id="tournamentName"
+                        placeholder="e.g. Matchcraft Premier League" required>
+                </label>
+
+                <label>
+                    Tournament Type
+                    <select id="tournamentType" required>
+                        <option value="">Select type</option>
+                        <option value="League">League</option>
+                        <option value="Knockout">Knockout</option>
+                        <option value="Group Stage">Group Stage</option>
+                        <option value="League & Knockout">League &amp; Knockout</option>
+                    </select>
+                </label>
+
+                <label>
+    Total Teams
+    <input
+        type="number"
+        id="tournamentTotalTeams"
+        min="2"
+        max="128"
+        step="1"
+        placeholder="Enter total teams"
+        required
+    >
+</label>
+
+<label id="tournamentGroupsField" hidden>
+    Number of Groups
+    <input
+        type="number"
+        id="tournamentGroupCount"
+        min="2"
+        max="32"
+        step="1"
+        placeholder="Enter number of groups"
+    >
+</label>
+
+                <label>
+                    Season
+                    <input type="text" id="tournamentSeason"
+                        placeholder="e.g. 2026" required>
+                </label>
+
+                <label>
+                    Start Date
+                    <input type="date" id="tournamentStartDate" required>
+                </label>
+
+                <label>
+                    End Date
+                    <input type="date" id="tournamentEndDate" required>
+                </label>
+
+                <label>
+                    Status
+                    <select id="tournamentStatus" required>
+                        <option value="Upcoming">Upcoming</option>
+                        <option value="Ongoing">Ongoing</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                </label>
+            </div>
+
+            <div class="tournament-form-actions">
+                <button type="submit" class="tournament-save-btn">
+                    Save Tournament
+                </button>
+                <button type="button" id="cancelTournamentForm"
+                    class="tournament-cancel-btn">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </section>
+
+    <section class="tournament-list-panel">
+        <div class="panel-heading">
+            <div>
+                <h2>All Tournaments</h2>
+                <p>Your saved competitions will appear here.</p>
+            </div>
+            <span id="tournamentCount" class="panel-tag">0 TOURNAMENTS</span>
+        </div>
+
+        <div id="tournamentList" class="tournament-list">
+            <div class="tournament-empty-state">
+                <i class="fas fa-trophy"></i>
+                <h3>No Tournaments Yet</h3>
+                <p>Create your first tournament to get started.</p>
+            </div>
+        </div>
+    </section>
+</section>
+
+
+<!-- MATCHCRAFT - Teams & Squads Section -->
+<section class="teams-content" id="teams" hidden>
+
+    <header class="teams-header">
+        <div>
+            <p class="dashboard-eyebrow">MATCHCRAFT MANAGEMENT</p>
+            <h1>Teams &amp; Squads</h1>
+            <p class="dashboard-subtitle">
+                Create and manage your football teams.
+            </p>
+        </div>
+
+        <button type="button" id="showTeamForm" class="team-add-btn">
+            <i class="fas fa-plus"></i>
+            Add Team
+        </button>
+    </header>
+
+    <!-- Team Form -->
+    <section class="team-form-panel" id="teamFormPanel" hidden>
+        <h2 id="teamFormTitle">Register New Team</h2>
+
+        <form id="teamForm">
+            <div class="team-form-grid">
+
+                <label>
+                    Team Name
+                    <input
+                        type="text"
+                        id="teamName"
+                        placeholder="e.g. Dhaka Warriors"
+                        required
+                    >
+                </label>
+
+                <label>
+                    Short Name
+                    <input
+                        type="text"
+                        id="teamShortName"
+                        placeholder="e.g. DKW"
+                        maxlength="10"
+                    >
+                </label>
+
+                <label>
+                    City / Location
+                    <input
+                        type="text"
+                        id="teamCity"
+                        placeholder="e.g. Dhaka"
+                    >
+                </label>
+
+                <label>
+                    Coach Name
+                    <input
+                        type="text"
+                        id="teamCoach"
+                        placeholder="Enter coach name"
+                    >
+                </label>
+
+                <label>
+    Player Limit
+    <input
+        type="number"
+        id="teamPlayerLimit"
+        min="1"
+        step="1"
+        placeholder="Enter player limit"
+        required
+    >
+    <small>একটি Team-এ সর্বোচ্চ কতজন Player রাখা যাবে।</small>
+</label>
+
+                <label>
+    Team Profile
+    <input
+        type="file"
+        id="teamProfileImage"
+        accept="image/*"
+    >
+    <small>Upload a team logo or profile image (optional).</small>
+</label>
+
+                <label>
+                    Tournament
+                    <select id="teamTournament">
+                        <option value="">No tournament selected</option>
+                    </select>
+                </label>
+
+            </div>
+
+            <div class="team-form-actions">
+                <button type="submit" class="team-save-btn">
+                    Save Team
+                </button>
+
+                <button
+                    type="button"
+                    id="cancelTeamForm"
+                    class="team-cancel-btn"
+                >
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </section>
+
+    <!-- Team List -->
+    <section class="team-list-panel">
+        <div class="panel-heading">
+            <div>
+                <h2>Registered Teams</h2>
+                <p>Your saved teams will appear here.</p>
+            </div>
+
+            <span id="teamCount" class="panel-tag">0 TEAMS</span>
+        </div>
+
+        <div id="teamList" class="team-list">
+            <div class="team-empty-state">
+                <i class="fas fa-shield-halved"></i>
+                <h3>No Teams Yet</h3>
+                <p>Add your first team to get started.</p>
+            </div>
+        </div>
+    </section>
+
+</section>
+<!-- MATCHCRAFT - Teams & Squads Section End -->
+
+
+<!-- MATCHCRAFT - Players Section -->
+<section class="players-content" id="players" hidden>
+
+    <header class="players-header">
+        <div>
+            <p class="dashboard-eyebrow">MATCHCRAFT MANAGEMENT</p>
+            <h1>Players Management</h1>
+            <p class="dashboard-subtitle">
+                Register and manage your football players.
+            </p>
+        </div>
+
+        <button type="button" id="showPlayerForm" class="player-add-btn">
+            <i class="fas fa-plus"></i>
+            Add Player
+        </button>
+    </header>
+
+    <!-- Player Registration Form -->
+    <section class="player-form-panel" id="playerFormPanel" hidden>
+        <h2 id="playerFormTitle">Register New Player</h2>
+
+        <form id="playerForm">
+            <div class="player-form-grid">
+
+                <label>
+    Player ID
+    <input
+    type="text"
+    id="playerId"
+    placeholder="Enter unique Player ID"
+    required
+>
+    <small>প্রতিটি খেলোয়াড়ের ID স্বয়ংক্রিয়ভাবে তৈরি হবে।</small>
+</label>
+
+                <label>
+                    Player Name
+                    <input
+                        type="text"
+                        id="playerName"
+                        placeholder="Enter player name"
+                        required
+                    >
+                </label>
+
+                <label>
+                    Jersey Number
+                    <input
+                        type="number"
+                        id="playerJersey"
+                        min="1"
+                        max="99"
+                        placeholder="e.g. 10"
+                        required
+                    >
+                </label>
+
+               <label>
+    Position
+    <select id="playerPosition" required>
+        <option value="">Select position</option>
+        <option value="Goalkeeper">Goalkeeper (GK)</option>
+        <option value="Centre-Back">Centre-Back (CB)</option>
+        <option value="Left-Back">Left-Back (LB)</option>
+        <option value="Right-Back">Right-Back (RB)</option>
+        <option value="Defensive Midfielder">Defensive Midfielder (CDM)</option>
+        <option value="Central Midfielder">Central Midfielder (CM)</option>
+        <option value="Attacking Midfielder">Attacking Midfielder (CAM)</option>
+        <option value="Left Winger">Left Winger (LW)</option>
+        <option value="Right Winger">Right Winger (RW)</option>
+        <option value="Striker">Striker (ST)</option>
+    </select>
+</label>
+
+                <label>
+                    Team
+                    <select id="playerTeam" required>
+                        <option value="">Select team</option>
+                    </select>
+                </label>
+
+                <label>
+                    Nationality
+                    <input
+                        type="text"
+                        id="playerNationality"
+                        placeholder="e.g. Bangladesh"
+                    >
+                </label>
+
+                <label>
+                    Age
+                    <input
+                        type="number"
+                        id="playerAge"
+                        min="1"
+                        max="100"
+                        placeholder="Enter age"
+                    >
+                </label>
+
+                <label class="player-photo-field">
+    Player Profile Photo
+    <input
+        type="file"
+        id="playerPhoto"
+        accept="image/*"
+    >
+    <small>Select a photo from your device gallery.</small>
+</label>
+
+            </div>
+
+            <div class="player-form-actions">
+                <button type="submit" class="player-save-btn">
+                    Save Player
+                </button>
+
+                <button
+                    type="button"
+                    id="cancelPlayerForm"
+                    class="player-cancel-btn"
+                >
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </section>
+
+    <!-- Registered Players -->
+    <section class="player-list-panel">
+        <div class="panel-heading">
+            <div>
+                <h2>Registered Players</h2>
+                <p>Your registered players will appear here.</p>
+            </div>
+
+            <span id="playerCount" class="panel-tag">0 PLAYERS</span>
+        </div>
+
+        <div id="playerList" class="player-list">
+            <div class="player-empty-state">
+                <i class="fas fa-users"></i>
+                <h3>No Players Yet</h3>
+                <p>Add your first player to get started.</p>
+            </div>
+        </div>
+    </section>
+
+</section>
+<!-- MATCHCRAFT - Players Section End -->
+
+
+
+        <!-- footer start -->
+
+        <footer>
+
+
+            <section class="section-last">
+
+                <div class="section-last__container">
+
+                    <div class="section-last__content-2 card-footer">
+
+                        <img src="image/hussain.jpg" alt="hussain">
+                        <h2 style="font-family:Arial, Helvetica, sans-serif; font-size: 2rem; font-weight: bold;">
+                            Developed by: Md. Rabbik Hussain</h2>
+                        <p style="font-family: 'Times New Roman', Times, serif; font-size: 30px;">Helpline: <i
+                                class="fa-solid fa-phone"></i> +880 1819-682851</p>
+                        <p style="font-size: 18px;">E-mail: <i class="fa-regular fa-envelope"></i>
+                            rabbikhussain722245@gmail.com</p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </footer>
+
+        <!-- footer end -->
+
+
+    </div>
+
+
+
+    <script src="app.js"></script>
+    <script src="teams.js"></script>
+    <script src="players.js"></script>
+    <script src=""></script>
+    <script src=""></script>
+    <script src=""></script>
+    <script src=""></script>
+    <script src=""></script>
+</body>
+
+</html>

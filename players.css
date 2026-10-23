@@ -1,0 +1,336 @@
+/* ========================================
+   MATCHCRAFT - PLAYER MANAGEMENT
+======================================== */
+
+.players-content {
+    width: 100%;
+    min-height: 100vh;
+    padding: 35px;
+    color: #f1f5f9;
+    background: #0f172a;
+    box-sizing: border-box;
+}
+
+.players-content[hidden],
+.player-form-panel[hidden] {
+    display: none !important;
+}
+
+/* Header */
+
+.players-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+}
+
+.players-header h1 {
+    margin: 8px 0;
+    color: #f8fafc;
+    font-size: clamp(25px, 3vw, 36px);
+    font-weight: 800;
+}
+
+.players-header .dashboard-subtitle {
+    color: #94a3b8;
+    line-height: 1.7;
+}
+
+/* Buttons */
+
+.player-add-btn,
+.player-save-btn,
+.player-cancel-btn {
+    border: none;
+    border-radius: 10px;
+    padding: 13px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.25s ease;
+}
+
+.player-add-btn,
+.player-save-btn {
+    color: #ffffff;
+    background: linear-gradient(135deg, #7c3aed, #4f46e5);
+    box-shadow: 0 6px 18px rgba(99, 102, 241, 0.2);
+}
+
+.player-add-btn:hover,
+.player-save-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 9px 24px rgba(99, 102, 241, 0.3);
+}
+
+.player-add-btn i {
+    margin-right: 7px;
+}
+
+.player-cancel-btn {
+    color: #e2e8f0;
+    background: #334155;
+}
+
+.player-cancel-btn:hover {
+    background: #475569;
+}
+
+/* Form Panel */
+
+.player-form-panel,
+.player-list-panel {
+    margin-bottom: 28px;
+    padding: 25px;
+    border: 1px solid #263449;
+    border-radius: 18px;
+    background: #172235;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+.player-form-panel h2,
+.player-list-panel h2 {
+    margin: 0 0 8px;
+    color: #f8fafc;
+    font-size: 21px;
+}
+
+.player-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+    margin-top: 25px;
+}
+
+.player-form-grid label {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    color: #cbd5e1;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.player-form-grid input,
+.player-form-grid select {
+    width: 100%;
+    min-height: 46px;
+    padding: 12px 14px;
+    box-sizing: border-box;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    outline: none;
+    color: #f8fafc;
+    background: #0f172a;
+    font: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.player-form-grid input::placeholder {
+    color: #64748b;
+}
+
+.player-form-grid select option {
+    color: #f8fafc;
+    background: #0f172a;
+}
+
+.player-form-grid input:focus,
+.player-form-grid select:focus {
+    border-color: #818cf8;
+    box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.13);
+}
+
+.player-form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+/* List Header */
+
+.player-list-panel > .panel-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.player-list-panel .panel-heading p {
+    margin: 5px 0 0;
+    color: #94a3b8;
+    line-height: 1.6;
+}
+
+#playerCount {
+    padding: 9px 12px;
+    border: 1px solid #3730a3;
+    border-radius: 8px;
+    color: #c7d2fe;
+    background: rgba(79, 70, 229, 0.15);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+/* Player List */
+
+.player-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.player-card {
+    min-width: 0;
+    padding: 20px;
+    border: 1px solid #2d3c52;
+    border-radius: 14px;
+    background: #111c2e;
+    transition: border-color 0.25s, transform 0.25s;
+}
+
+.player-card:hover {
+    transform: translateY(-3px);
+    border-color: #6366f1;
+}
+
+.player-card h3 {
+    margin: 0 0 12px;
+    overflow-wrap: anywhere;
+    color: #f8fafc;
+    font-size: 19px;
+}
+
+.player-card p {
+    margin: 8px 0;
+    color: #aebdd0;
+    font-size: 14px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.player-card p strong {
+    color: #e2e8f0;
+}
+
+.player-card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.player-edit-btn,
+.player-delete-btn {
+    padding: 9px 14px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.player-edit-btn {
+    border-color: #4338ca;
+    color: #c7d2fe;
+    background: rgba(79, 70, 229, 0.15);
+}
+
+.player-edit-btn:hover {
+    background: #3730a3;
+}
+
+.player-delete-btn {
+    border-color: #7f1d1d;
+    color: #fecaca;
+    background: rgba(220, 38, 38, 0.12);
+}
+
+.player-delete-btn:hover {
+    background: #991b1b;
+}
+
+/* Empty State */
+
+.player-empty-state {
+    grid-column: 1 / -1;
+    padding: 45px 20px;
+    border: 1px dashed #334155;
+    border-radius: 14px;
+    text-align: center;
+    background: rgba(15, 23, 42, 0.45);
+}
+
+.player-empty-state > i {
+    margin-bottom: 15px;
+    color: #818cf8;
+    font-size: 42px;
+}
+
+.player-empty-state h3 {
+    margin: 0 0 10px;
+    color: #e2e8f0;
+    font-size: 19px;
+}
+
+.player-empty-state p {
+    margin: 0;
+    color: #94a3b8;
+    line-height: 1.7;
+}
+
+/* Responsive Design */
+
+@media (max-width: 900px) {
+    .players-content {
+        padding: 25px 20px;
+    }
+
+    .player-list {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .players-content {
+        padding: 20px 14px;
+    }
+
+    .players-header {
+        align-items: stretch;
+    }
+
+    .player-add-btn {
+        width: 100%;
+    }
+
+    .player-form-panel,
+    .player-list-panel {
+        padding: 17px;
+        border-radius: 14px;
+    }
+
+    .player-form-grid {
+        grid-template-columns: 1fr;
+        gap: 17px;
+    }
+
+    .player-form-actions {
+        flex-direction: column;
+    }
+
+    .player-save-btn,
+    .player-cancel-btn {
+        width: 100%;
+    }
+
+    .player-list-panel > .panel-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}

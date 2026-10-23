@@ -1,0 +1,378 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+.main-box {
+    position: relative;
+    background: url("image/football.jpg") center center / cover no-repeat;
+    min-height: 100vh;
+    height: auto;
+    width: 100%;
+    padding-top: 1px;
+    padding-bottom: 20px;
+}
+
+.main-box .sidebar_menu{
+    position: fixed;
+    height: 100vh;
+    width: 280px;
+    left: -280px;
+    background: rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 6px rgba(255,255,255,0.9);
+}
+
+.sidebar_menu .logo{
+    position: absolute;
+    width: 100%;
+    height: 60px;
+     box-shadow: 0 0 6px rgba(255,255,255,0.9);
+}
+
+.sidebar_menu .logo a{
+    color: gold;
+    font-size: 30px;
+    font-weight: bold;
+    font-family: 'Times New Roman', Times, serif;
+    position: absolute;
+    left: 50px;
+    line-height: 60px;
+    text-decoration: none;
+}
+
+.sidebar_menu .menu{
+    position: absolute;
+    top: 80px;
+    width: 100%;
+}
+
+.sidebar_menu .menu li{
+    margin-top: 6px;
+    padding: 14px 20px;
+    transition: all 0.2s linear;
+}
+
+.sidebar_menu .menu i{
+    color: #fff;
+    font-size: 30px;
+    padding-right: 8px;
+}
+
+.sidebar_menu .menu a{
+    color: #fff;
+    font-size: 20px;
+    text-decoration: none;
+}
+
+.sidebar_menu .menu li:hover{
+    border-left: 3px solid #fff;
+    box-shadow: 0 0 4px rgba(255,255,255,0.5);
+}
+
+.sidebar_menu .social_media{
+    position: absolute;
+    left: 50%;
+    bottom: 20px;
+    transform: translateX(-50%);
+}
+
+.social_media i{
+    padding: 0 5px;
+    color: #fff;
+    opacity: 0.6;
+    font-size: 20px;
+    transition: all 0.2s linear;
+}
+
+.social_media i:hover{
+    opacity: 1;
+}
+
+#check{
+    display: none;
+}
+
+.main-box .btn_one i{
+    color: #fff;
+    font-size: 30px;
+    font-weight: 700;
+    position: absolute;
+    left: 16px;
+    line-height: 60px;
+    cursor: pointer;
+    opacity: 1;
+    transition: all o.3s linear;
+}
+
+.main-box .btn_two i{
+    font-size: 25px;
+    line-height: 60px;
+    position: absolute;
+    left: 240px;
+    cursor: pointer;
+    opacity: 1;
+    transition: all o.3s linear;
+    height: 45px;
+}
+
+.btn_one i:hover{
+    font-size: 29px;
+    transform: scale(1.5);
+}
+.btn_two i:hover{
+    font-size: 24px;
+    transform: scale(1.5);
+    color: red;
+}
+
+#check:checked ~ .sidebar_menu{
+    left: 0px;
+}
+
+#check:checked ~ .btn_one i{
+    opacity: 0;
+}
+#check:checked ~ .btn_two i{
+    opacity: 1;
+}
+
+/* =================================
+   MATCHCRAFT - COLORFUL SIDEBAR ICONS
+================================= */
+
+.sidebar_menu .menu li a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.25s ease;
+}
+
+.sidebar_menu .menu li i {
+    width: 26px;
+    text-align: center;
+    font-size: 30px;
+    transition: all 0.25s ease;
+}
+
+/* Individual icon colors */
+.sidebar_menu .menu li:nth-child(1) i {
+    color: #60A5FA;
+}
+
+.sidebar_menu .menu li:nth-child(2) i {
+    color: #FBBF24;
+}
+
+.sidebar_menu .menu li:nth-child(3) i {
+    color: #34D399;
+}
+
+.sidebar_menu .menu li:nth-child(4) i {
+    color: #C084FC;
+}
+
+.sidebar_menu .menu li:nth-child(5) i {
+    color: #FB7185;
+}
+
+.sidebar_menu .menu li:nth-child(6) i {
+    color: #22D3EE;
+}
+
+.sidebar_menu .menu li:nth-child(7) i {
+    color: #A3E635;
+}
+
+.sidebar_menu .menu li:nth-child(8) i {
+    color: #F472B6;
+}
+
+.sidebar_menu .menu li:nth-child(9) i {
+    color: #A5B4FC;
+}
+
+.sidebar_menu .menu li:nth-child(10) i {
+    color: #FDBA74;
+}
+
+/* Hover effect */
+.sidebar_menu .menu li:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-left: 3px solid #60A5FA;
+}
+
+.sidebar_menu .menu li:hover i {
+    transform: scale(1.15);
+    filter: drop-shadow(0 0 5px currentColor);
+}
+
+.sidebar_menu .menu li:hover a {
+    color: #FFFFFF;
+}
+
+/* MATCHCRAFT - Golden Hover Effect */
+
+.sidebar_menu .menu li {
+    border-radius: 8px;
+    transition: background-color 0.25s ease,
+                transform 0.25s ease,
+                box-shadow 0.25s ease;
+    border-left: 3px solid transparent;
+}
+
+.sidebar_menu .menu li:hover {
+    background: linear-gradient(
+        135deg,
+        #FFD700,
+        #F0B90B
+    );
+
+    border-left: 3px solid #B8860B;
+
+    box-shadow: 0 3px 12px rgba(255, 215, 0, 0.30);
+
+    transform: translateX(3px);
+}
+
+/* Hover করলে লেখার রং কালো ও Bold হবে */
+.sidebar_menu .menu li:hover a {
+    color: #111111;
+    font-weight: 700;
+}
+
+/* Hover করলে আইকনের রংও কালো হবে */
+.sidebar_menu .menu li:hover i {
+    color: #111111;
+    filter: none;
+    transform: scale(1.12);
+}
+
+/* MATCHCRAFT - Desktop Sidebar Layout */
+@media (min-width: 669px) {
+    .main-box {
+        padding-left: 280px;
+    }
+
+    .main-box .sidebar_menu {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 280px;
+        height: 100vh;
+        z-index: 1000;
+    }
+
+    .main-box .btn_one,
+    .main-box .btn_two {
+        display: none;
+    }
+
+    #check {
+        display: none;
+    }
+}
+
+/* MATCHCRAFT - Mobile Sidebar Layout */
+@media (max-width: 668px) {
+    .main-box {
+        padding-left: 0;
+    }
+
+    .main-box .sidebar_menu {
+        position: fixed;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100vh;
+        height: 100dvh;
+        z-index: 1000;
+        overflow-y: auto;
+        transition: left 0.3s ease;
+        background: rgba(0, 0, 0, 0.96);
+    }
+
+    #check:checked ~ .sidebar_menu {
+        left: 0;
+    }
+
+    .main-box .btn_one {
+        z-index: 1001;
+    }
+
+    .main-box .btn_two {
+        z-index: 1002;
+    }
+
+    #check:checked ~ .btn_one {
+        display: none;
+    }
+
+    #check:checked ~ .sidebar_menu .btn_two {
+        display: block;
+    }
+}
+
+
+
+
+
+
+/* *for footer */
+
+.card-footer {
+  box-shadow: 5px 5px 10px gray, -5px -5px 10px white;
+  border-radius: 20px;
+  transition: all .3s;
+  padding: 10px;
+  margin-top: 20px;
+}
+
+.card-footer:hover {
+  color: white;
+  background-color: #1a01f5;
+  box-shadow: inset 5px 5px 10px #000000, -5px -5px 10px #ffffff;
+}
+
+/* !footer start */
+
+
+.section-last__container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1;
+  margin: 0 2rem;
+  margin-bottom: 20px;
+}
+
+.section-last__content-2 {
+  display: flex;
+  flex-direction: column;
+  flex: 50%;
+  color: gold;
+  padding: 20px;
+  margin-left: 1.5rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.section-last__content-2 img {
+  width: 100px;
+  height: 100px;
+  border: 1.5px solid black;
+  border-radius: 50%;
+}
+
+
+/* footer end */
+
+@media(max-width:992px) {
+  
+  .section-last__content-2 {
+    width: 100%;
+    margin-right: 20px;
+  }
+  
+}
