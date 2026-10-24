@@ -782,15 +782,13 @@
                 "Player সংরক্ষণ করার সময় সমস্যা হয়েছে। " +
                 "অন্য একটি ছবি দিয়ে আবার চেষ্টা করুন।"
             );
-        } finally {
+       } finally {
             if (submitBtn) {
                 submitBtn.disabled = false;
 
-                if (editingPlayerId) {
-                    submitBtn.textContent = "Update Player";
-                } else {
-                    submitBtn.textContent = originalButtonText || "Save Player";
-                }
+                submitBtn.textContent = editingPlayerId
+                    ? "Update Player"
+                    : "Save Player";
             }
         }
     });

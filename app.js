@@ -625,6 +625,31 @@ card.appendChild(actions);
         updateDashboardStats();
     }
 
+    /* ---------- Dashboard Quick Actions Navigation ---------- */
+
+document.querySelectorAll(".quick-action[data-page]").forEach(function (button) {
+    button.addEventListener("click", function () {
+        const pageName = button.dataset.page;
+
+        const pageLinks = document.querySelectorAll(
+            ".sidebar_menu .menu a[data-page]"
+        );
+
+        const matchingLink = Array.from(pageLinks).find(function (link) {
+            return link.dataset.page === pageName;
+        });
+
+        if (matchingLink) {
+            matchingLink.click();
+            return;
+        }
+
+        alert(
+            "এই পেজটি এখনো তৈরি করা হয়নি।"
+        );
+    });
+});
+
    /* ---------- Navigation for All Pages ---------- */
 
 const pageLinks = document.querySelectorAll(
@@ -648,8 +673,15 @@ pageLinks.forEach(function (link) {
         event.preventDefault();
 
         const pageName = link.dataset.page;
+        const selectedPage = document.getElementById(pageName);
 
-        // Hide every page section first
+        // পেজ তৈরি না থাকলে অন্য পেজ লুকাবেন না
+        if (!selectedPage) {
+            alert("এই পেজটি এখনো তৈরি করা হয়নি।");
+            return;
+        }
+
+        // সব পেজ লুকান
         pageSectionIds.forEach(function (id) {
             const section = document.getElementById(id);
 
@@ -663,15 +695,11 @@ pageLinks.forEach(function (link) {
             }
         });
 
-        // Show only the selected page
-        const selectedPage = document.getElementById(pageName);
+        // শুধু নির্বাচিত পেজ দেখান
+        selectedPage.hidden = false;
+        selectedPage.style.removeProperty("display");
 
-        if (selectedPage) {
-            selectedPage.hidden = false;
-            selectedPage.style.removeProperty("display");
-        }
-
-        // Refresh the selected page when needed
+        // নির্বাচিত পেজের তথ্য আপডেট করুন
         if (pageName === "dashboard") {
             updateDashboardStats();
         }
@@ -1014,6 +1042,35 @@ if (action === "details") {
                     );
                     return;
                 }
+
+                /* Validate Tournament Team Capacity */
+
+const assignedTeams = JSON.parse(
+    localStorage.getItem("matchcraft_teams") || "[]"
+);
+
+const currentTournamentId = editingTournamentId !== null
+    ? String(editingTournamentId)
+    : null;
+
+if (currentTournamentId !== null) {
+    const assignedTeamCount = assignedTeams.filter(function (team) {
+        return String(
+            team.tournamentId ?? team.tournament ?? ""
+        ) === currentTournamentId;
+    }).length;
+
+    if (totalTeams < assignedTeamCount) {
+        alert(
+            "এই Tournament-এ ইতিমধ্যে " +
+            assignedTeamCount +
+            "টি টিম যুক্ত রয়েছে। Total Teams এর সংখ্যা " +
+            assignedTeamCount +
+            "-এর কম করা যাবে না।"
+        );
+        return;
+    }
+}
 
 
                 /* Create Tournament Object */

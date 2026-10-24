@@ -295,6 +295,58 @@
     }
 
     // -------------------------------------
+    // Tournament Team Capacity Validation
+    // -------------------------------------
+
+    function getTournamentTeamCount(tournamentId, excludeTeamId = null) {
+        return getTeams().filter(function (team) {
+            if (
+                excludeTeamId !== null &&
+                getTeamId(team) === String(excludeTeamId)
+            ) {
+                return false;
+            }
+
+            return getTeamTournamentId(team) === String(tournamentId);
+        }).length;
+    }
+
+    function canAssignTeamToTournament(tournamentId, currentTeamId = null) {
+        if (!tournamentId) {
+            return true;
+        }
+
+        const tournament = findTournament(tournamentId);
+
+        if (!tournament) {
+            alert("নির্বাচিত Tournament খুঁজে পাওয়া যায়নি।");
+            return false;
+        }
+
+        const capacity = Number(tournament.totalTeams);
+
+        if (!Number.isInteger(capacity) || capacity < 1) {
+            alert("এই Tournament-এর Team Capacity সঠিক নয়।");
+            return false;
+        }
+
+        const assignedCount = getTournamentTeamCount(
+            tournamentId,
+            currentTeamId
+        );
+
+        if (assignedCount >= capacity) {
+            alert(
+                "এই Tournament-এর টিমের সংখ্যা পূর্ণ হয়ে গেছে। " +
+                "নির্ধারিত সীমার বেশি টিম যুক্ত করা যাবে না।"
+            );
+            return false;
+        }
+
+        return true;
+    }
+
+    // -------------------------------------
     // Form Helpers
     // -------------------------------------
 
@@ -1306,6 +1358,26 @@
             );
             teamNameInput.focus();
             return;
+        }
+
+        // Check tournament team capacity before saving
+        if (tournamentId) {
+            const existingTeam = editingTeamId !== null
+                ? getTeams().find(function (team) {
+                    return getTeamId(team) === String(editingTeamId);
+                })
+                : null;
+
+            const isSameTournament = existingTeam &&
+                getTeamTournamentId(existingTeam) === String(tournamentId);
+
+            if (
+                !isSameTournament &&
+                !canAssignTeamToTournament(tournamentId)
+            ) {
+                teamTournamentSelect.focus();
+                return;
+            }
         }
 
         const teams = getTeams();
