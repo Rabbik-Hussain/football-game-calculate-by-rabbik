@@ -1,0 +1,1202 @@
+/* ==========================================================
+   MATCHCRAFT — STANDINGS & BRACKETS
+   File: bracat.css
+   Premium Dark Responsive Design
+   ========================================================== */
+
+#standings,
+#brackets,
+#bracat {
+  --br-bg: #0b1020;
+  --br-panel: #121a2c;
+  --br-panel-light: #172238;
+  --br-border: rgba(148, 163, 184, 0.17);
+  --br-text: #f1f5f9;
+  --br-muted: #94a3b8;
+  --br-primary: #38bdf8;
+  --br-primary-soft: rgba(56, 189, 248, 0.12);
+  --br-green: #34d399;
+  --br-yellow: #fbbf24;
+  --br-red: #fb7185;
+
+  width: 100%;
+  min-width: 0;
+  padding: 24px;
+  color: var(--br-text);
+  font-family: "Inter", "Hind Siliguri", sans-serif;
+  box-sizing: border-box;
+}
+
+#standings *,
+#standings *::before,
+#standings *::after,
+#brackets *,
+#brackets *::before,
+#brackets *::after,
+#bracat *,
+#bracat *::before,
+#bracat *::after {
+  box-sizing: border-box;
+}
+
+#standings [hidden],
+#brackets [hidden],
+#bracat [hidden] {
+  display: none !important;
+}
+
+#standings button,
+#standings input,
+#standings select,
+#standings textarea,
+#brackets button,
+#brackets input,
+#brackets select,
+#brackets textarea,
+#bracat button,
+#bracat input,
+#bracat select,
+#bracat textarea {
+  font: inherit;
+}
+
+#standings button,
+#brackets button,
+#bracat button {
+  cursor: pointer;
+}
+
+#standings input:focus,
+#standings select:focus,
+#standings textarea:focus,
+#brackets input:focus,
+#brackets select:focus,
+#brackets textarea:focus,
+#bracat input:focus,
+#bracat select:focus,
+#bracat textarea:focus {
+  outline: 2px solid rgba(56, 189, 248, 0.65);
+  outline-offset: 2px;
+}
+
+/* ==========================================================
+   PAGE HEADER
+   ========================================================== */
+
+#standings .br-header,
+#standings .br-page-header,
+#brackets .br-header,
+#brackets .br-page-header,
+#bracat .br-header,
+#bracat .br-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-bottom: 26px;
+}
+
+#standings .br-header h1,
+#standings .br-page-header h1,
+#brackets .br-header h1,
+#brackets .br-page-header h1,
+#bracat .br-header h1,
+#bracat .br-page-header h1 {
+  margin: 0 0 8px;
+  color: #f8fafc;
+  font-size: clamp(1.55rem, 3vw, 2.15rem);
+  font-weight: 850;
+  letter-spacing: -0.035em;
+}
+
+#standings .br-header p,
+#standings .br-page-header p,
+#brackets .br-header p,
+#brackets .br-page-header p,
+#bracat .br-header p,
+#bracat .br-page-header p {
+  margin: 0;
+  color: var(--br-muted);
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+#standings .br-eyebrow,
+#brackets .br-eyebrow,
+#bracat .br-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 9px;
+  color: var(--br-primary);
+  font-size: 0.72rem;
+  font-weight: 850;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+/* ==========================================================
+   SHARED PANELS
+   ========================================================== */
+
+#standings .br-panel,
+#standings .br-card,
+#standings .br-stat-card,
+#brackets .br-panel,
+#brackets .br-card,
+#brackets .br-stat-card,
+#bracat .br-panel,
+#bracat .br-card,
+#bracat .br-stat-card {
+  min-width: 0;
+  border: 1px solid var(--br-border);
+  border-radius: 17px;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(23, 34, 56, 0.97),
+      rgba(15, 23, 42, 0.99)
+    );
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.13);
+}
+
+#standings .br-panel,
+#brackets .br-panel,
+#bracat .br-panel {
+  padding: 22px;
+  margin-bottom: 22px;
+}
+
+#standings .br-panel-heading,
+#standings .br-section-heading,
+#brackets .br-panel-heading,
+#brackets .br-section-heading,
+#bracat .br-panel-heading,
+#bracat .br-section-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+#standings .br-panel-heading h2,
+#standings .br-section-heading h2,
+#brackets .br-panel-heading h2,
+#brackets .br-section-heading h2,
+#bracat .br-panel-heading h2,
+#bracat .br-section-heading h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 7px;
+  color: #f8fafc;
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+#standings .br-panel-heading h2 i,
+#standings .br-section-heading h2 i,
+#brackets .br-panel-heading h2 i,
+#brackets .br-section-heading h2 i,
+#bracat .br-panel-heading h2 i,
+#bracat .br-section-heading h2 i {
+  color: var(--br-primary);
+}
+
+#standings .br-panel-heading p,
+#standings .br-section-heading p,
+#brackets .br-panel-heading p,
+#brackets .br-section-heading p,
+#bracat .br-panel-heading p,
+#bracat .br-section-heading p {
+  margin: 0;
+  color: var(--br-muted);
+  font-size: 0.83rem;
+  line-height: 1.65;
+}
+
+/* ==========================================================
+   BUTTONS
+   ========================================================== */
+
+#standings .br-btn,
+#standings .br-primary-btn,
+#standings .br-secondary-btn,
+#brackets .br-btn,
+#brackets .br-primary-btn,
+#brackets .br-secondary-btn,
+#bracat .br-btn,
+#bracat .br-primary-btn,
+#bracat .br-secondary-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 10px 15px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font-size: 0.84rem;
+  font-weight: 800;
+  line-height: 1.35;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+#standings .br-primary-btn,
+#brackets .br-primary-btn,
+#bracat .br-primary-btn {
+  color: #061522;
+  background: linear-gradient(135deg, #7dd3fc, #38bdf8);
+}
+
+#standings .br-primary-btn:hover,
+#brackets .br-primary-btn:hover,
+#bracat .br-primary-btn:hover {
+  transform: translateY(-1px);
+  background: linear-gradient(135deg, #bae6fd, #38bdf8);
+}
+
+#standings .br-secondary-btn,
+#standings .br-btn,
+#brackets .br-secondary-btn,
+#brackets .br-btn,
+#bracat .br-secondary-btn,
+#bracat .br-btn {
+  color: #e2e8f0;
+  background: rgba(148, 163, 184, 0.08);
+  border-color: var(--br-border);
+}
+
+#standings .br-secondary-btn:hover,
+#standings .br-btn:hover,
+#brackets .br-secondary-btn:hover,
+#brackets .br-btn:hover,
+#bracat .br-secondary-btn:hover,
+#bracat .br-btn:hover {
+  background: rgba(148, 163, 184, 0.15);
+  border-color: rgba(148, 163, 184, 0.32);
+}
+
+#standings button:disabled,
+#brackets button:disabled,
+#bracat button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  transform: none;
+}
+
+/* ==========================================================
+   TOURNAMENT CONTROLS
+   ========================================================== */
+
+#standings .br-controls,
+#standings .br-toolbar,
+#brackets .br-controls,
+#brackets .br-toolbar,
+#bracat .br-controls,
+#bracat .br-toolbar {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+#standings .br-control,
+#brackets .br-control,
+#bracat .br-control {
+  display: flex;
+  flex: 1 1 210px;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  color: #cbd5e1;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+#standings .br-control select,
+#standings .br-control input,
+#brackets .br-control select,
+#brackets .br-control input,
+#bracat .br-control select,
+#bracat .br-control input {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 13px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 10px;
+  color: #f1f5f9;
+  background: #0d1527;
+  font-size: 0.86rem;
+}
+
+#standings .br-control select option,
+#brackets .br-control select option,
+#bracat .br-control select option {
+  color: #f1f5f9;
+  background: #0d1527;
+}
+
+/* ==========================================================
+   SUMMARY STATISTICS
+   ========================================================== */
+
+#standings .br-stats,
+#standings .br-stats-grid,
+#brackets .br-stats,
+#brackets .br-stats-grid,
+#bracat .br-stats,
+#bracat .br-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 23px;
+}
+
+#standings .br-stat-card,
+#brackets .br-stat-card,
+#bracat .br-stat-card {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 17px;
+}
+
+#standings .br-stat-icon,
+#brackets .br-stat-icon,
+#bracat .br-stat-icon {
+  display: grid;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border-radius: 13px;
+  color: #7dd3fc;
+  background: rgba(56, 189, 248, 0.12);
+  font-size: 1.15rem;
+}
+
+#standings .br-stat-icon.green,
+#brackets .br-stat-icon.green,
+#bracat .br-stat-icon.green {
+  color: #6ee7b7;
+  background: rgba(52, 211, 153, 0.12);
+}
+
+#standings .br-stat-icon.yellow,
+#brackets .br-stat-icon.yellow,
+#bracat .br-stat-icon.yellow {
+  color: #fcd34d;
+  background: rgba(251, 191, 36, 0.12);
+}
+
+#standings .br-stat-label,
+#brackets .br-stat-label,
+#bracat .br-stat-label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--br-muted);
+  font-size: 0.76rem;
+  font-weight: 650;
+}
+
+#standings .br-stat-value,
+#standings .br-stat-card strong,
+#brackets .br-stat-value,
+#brackets .br-stat-card strong,
+#bracat .br-stat-value,
+#bracat .br-stat-card strong {
+  display: block;
+  color: #f8fafc;
+  font-size: 1.45rem;
+  font-weight: 850;
+  line-height: 1.25;
+}
+
+/* ==========================================================
+   LEAGUE STANDINGS TABLE
+   ========================================================== */
+
+#standings .br-table-wrapper,
+#standings .br-table-scroll,
+#bracat .br-table-wrapper,
+#bracat .br-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--br-border);
+  border-radius: 13px;
+  scrollbar-width: thin;
+  scrollbar-color: #334155 #0d1527;
+}
+
+#standings .br-table,
+#standings table.br-table,
+#standings table,
+#bracat .br-table,
+#bracat table.br-table,
+#bracat table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  color: #e2e8f0;
+  background: rgba(8, 15, 29, 0.5);
+  font-size: 0.82rem;
+}
+
+#standings .br-table thead,
+#standings table thead,
+#bracat .br-table thead,
+#bracat table thead {
+  background: #1a2940;
+}
+
+#standings .br-table th,
+#standings .br-table td,
+#standings table th,
+#standings table td,
+#bracat .br-table th,
+#bracat .br-table td,
+#bracat table th,
+#bracat table td {
+  padding: 13px 12px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.11);
+  text-align: center;
+  white-space: nowrap;
+}
+
+#standings .br-table th,
+#standings table th,
+#bracat .br-table th,
+#bracat table th {
+  color: #cbd5e1;
+  font-size: 0.7rem;
+  font-weight: 850;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+}
+
+#standings .br-table tbody tr:last-child td,
+#standings table tbody tr:last-child td,
+#bracat .br-table tbody tr:last-child td,
+#bracat table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+#standings .br-table tbody tr:hover,
+#standings table tbody tr:hover,
+#bracat .br-table tbody tr:hover,
+#bracat table tbody tr:hover {
+  background: rgba(56, 189, 248, 0.045);
+}
+
+#standings .br-table .br-team-cell,
+#standings table .br-team-cell,
+#bracat .br-table .br-team-cell,
+#bracat table .br-team-cell {
+  min-width: 170px;
+  text-align: left;
+}
+
+#standings .br-team-name,
+#bracat .br-team-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: #f1f5f9;
+  font-weight: 750;
+}
+
+#standings .br-team-logo,
+#bracat .br-team-logo {
+  flex: 0 0 29px;
+  width: 29px;
+  height: 29px;
+  border: 1px solid var(--br-border);
+  border-radius: 50%;
+  background: #1e293b;
+  object-fit: cover;
+}
+
+#standings .br-rank,
+#bracat .br-rank {
+  display: inline-grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  border-radius: 8px;
+  color: #cbd5e1;
+  background: rgba(148, 163, 184, 0.1);
+  font-size: 0.75rem;
+  font-weight: 850;
+}
+
+#standings tr.br-qualified,
+#standings .br-qualified,
+#bracat tr.br-qualified,
+#bracat .br-qualified {
+  background: rgba(52, 211, 153, 0.055);
+}
+
+#standings tr.br-qualified td:first-child,
+#bracat tr.br-qualified td:first-child {
+  box-shadow: inset 3px 0 0 var(--br-green);
+}
+
+#standings .br-points,
+#bracat .br-points {
+  color: #7dd3fc;
+  font-weight: 900;
+}
+
+#standings .br-positive,
+#bracat .br-positive {
+  color: #6ee7b7;
+}
+
+#standings .br-negative,
+#bracat .br-negative {
+  color: #fda4af;
+}
+
+#standings .br-zero,
+#bracat .br-zero {
+  color: var(--br-muted);
+}
+
+/* ==========================================================
+   GROUP STAGE
+   ========================================================== */
+
+#standings .br-groups,
+#standings .br-group-grid,
+#bracat .br-groups,
+#bracat .br-group-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+#standings .br-group-card,
+#bracat .br-group-card {
+  min-width: 0;
+  padding: 18px;
+  overflow: hidden;
+  border: 1px solid var(--br-border);
+  border-radius: 15px;
+  background: rgba(10, 18, 33, 0.62);
+}
+
+#standings .br-group-heading,
+#bracat .br-group-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+#standings .br-group-heading h3,
+#bracat .br-group-heading h3 {
+  margin: 0;
+  color: #f8fafc;
+  font-size: 1rem;
+  font-weight: 850;
+}
+
+#standings .br-group-label,
+#bracat .br-group-label {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 9px;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: 999px;
+  color: #7dd3fc;
+  background: var(--br-primary-soft);
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+#standings .br-qualification-note,
+#bracat .br-qualification-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin-top: 13px;
+  padding: 11px 12px;
+  border: 1px solid rgba(52, 211, 153, 0.16);
+  border-radius: 10px;
+  color: #a7f3d0;
+  background: rgba(52, 211, 153, 0.055);
+  font-size: 0.77rem;
+  line-height: 1.6;
+}
+
+#standings .br-qualification-note i,
+#bracat .br-qualification-note i {
+  margin-top: 3px;
+  color: var(--br-green);
+}
+
+/* ==========================================================
+   QUALIFICATION BADGES
+   ========================================================== */
+
+#standings .br-qualified-badge,
+#standings .br-qualify-badge,
+#bracat .br-qualified-badge,
+#bracat .br-qualify-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 5px 8px;
+  border: 1px solid rgba(52, 211, 153, 0.2);
+  border-radius: 999px;
+  color: #6ee7b7;
+  background: rgba(52, 211, 153, 0.09);
+  font-size: 0.67rem;
+  font-weight: 850;
+}
+
+/* ==========================================================
+   BRACKET SCROLL AREA
+   ========================================================== */
+
+#brackets .br-bracket-scroll,
+#standings .br-bracket-scroll,
+#bracat .br-bracket-scroll,
+.br-bracket-scroll {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 8px 3px 18px;
+  scrollbar-width: thin;
+  scrollbar-color: #475569 #0d1527;
+  overscroll-behavior-x: contain;
+}
+
+#brackets .br-bracket,
+#standings .br-bracket,
+#bracat .br-bracket,
+.br-bracket {
+  display: flex;
+  align-items: stretch;
+  gap: 26px;
+  min-width: max-content;
+  padding: 8px 5px 16px;
+}
+
+#brackets .br-round,
+#standings .br-round,
+#bracat .br-round,
+.br-bracket .br-round {
+  display: flex;
+  flex: 0 0 250px;
+  flex-direction: column;
+  justify-content: space-around;
+  gap: 20px;
+  min-width: 250px;
+}
+
+#brackets .br-round-title,
+#standings .br-round-title,
+#bracat .br-round-title,
+.br-round-title {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  margin: 0 0 8px;
+  padding: 12px 13px;
+  border: 1px solid var(--br-border);
+  border-radius: 11px;
+  color: #bae6fd;
+  background: #172238;
+  font-size: 0.83rem;
+  font-weight: 850;
+  text-align: center;
+}
+
+/* ==========================================================
+   BRACKET MATCH CARDS
+   ========================================================== */
+
+#brackets .br-match-card,
+#standings .br-match-card,
+#bracat .br-match-card,
+.br-match-card {
+  position: relative;
+  min-width: 0;
+  padding: 13px;
+  border: 1px solid var(--br-border);
+  border-radius: 13px;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(23, 34, 56, 0.98),
+      rgba(10, 18, 33, 0.98)
+    );
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.14);
+}
+
+#brackets .br-match-card:hover,
+#standings .br-match-card:hover,
+#bracat .br-match-card:hover,
+.br-match-card:hover {
+  border-color: rgba(56, 189, 248, 0.35);
+}
+
+#brackets .br-match-meta,
+#standings .br-match-meta,
+#bracat .br-match-meta,
+.br-match-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 11px;
+  color: var(--br-muted);
+  font-size: 0.68rem;
+}
+
+#brackets .br-match-teams,
+#standings .br-match-teams,
+#bracat .br-match-teams,
+.br-match-teams {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+#brackets .br-match-team,
+#standings .br-match-team,
+#bracat .br-match-team,
+.br-match-team {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+  padding: 11px 8px;
+  border-radius: 8px;
+  color: #cbd5e1;
+  font-size: 0.81rem;
+  font-weight: 700;
+}
+
+#brackets .br-match-team + .br-match-team,
+#standings .br-match-team + .br-match-team,
+#bracat .br-match-team + .br-match-team,
+.br-match-team + .br-match-team {
+  border-top: 1px solid rgba(148, 163, 184, 0.11);
+}
+
+#brackets .br-match-team span:first-child,
+#standings .br-match-team span:first-child,
+#bracat .br-match-team span:first-child,
+.br-match-team span:first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+#brackets .br-match-team .br-team-score,
+#standings .br-match-team .br-team-score,
+#bracat .br-match-team .br-team-score,
+.br-match-team .br-team-score {
+  flex: 0 0 auto;
+  min-width: 24px;
+  color: #f8fafc;
+  font-size: 0.9rem;
+  font-weight: 900;
+  text-align: right;
+}
+
+#brackets .br-match-team.br-winner,
+#standings .br-match-team.br-winner,
+#bracat .br-match-team.br-winner,
+.br-match-team.br-winner {
+  color: #6ee7b7;
+  background: rgba(52, 211, 153, 0.07);
+}
+
+#brackets .br-match-team.br-winner .br-team-score,
+#standings .br-match-team.br-winner .br-team-score,
+#bracat .br-match-team.br-winner .br-team-score,
+.br-match-team.br-winner .br-team-score {
+  color: #6ee7b7;
+}
+
+#brackets .br-match-status,
+#standings .br-match-status,
+#bracat .br-match-status,
+.br-match-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 7px;
+  border: 1px solid var(--br-border);
+  border-radius: 999px;
+  color: var(--br-muted);
+  background: rgba(148, 163, 184, 0.06);
+  font-size: 0.65rem;
+  font-weight: 800;
+}
+
+#brackets .br-match-status.completed,
+#standings .br-match-status.completed,
+#bracat .br-match-status.completed,
+.br-match-status.completed {
+  color: #6ee7b7;
+  border-color: rgba(52, 211, 153, 0.18);
+  background: rgba(52, 211, 153, 0.08);
+}
+
+#brackets .br-match-status.upcoming,
+#standings .br-match-status.upcoming,
+#bracat .br-match-status.upcoming,
+.br-match-status.upcoming {
+  color: #7dd3fc;
+  border-color: rgba(56, 189, 248, 0.18);
+  background: rgba(56, 189, 248, 0.08);
+}
+
+#brackets .br-match-status.pending,
+#standings .br-match-status.pending,
+#bracat .br-match-status.pending,
+.br-match-status.pending {
+  color: #fcd34d;
+  border-color: rgba(251, 191, 36, 0.18);
+  background: rgba(251, 191, 36, 0.08);
+}
+
+#brackets .br-match-note,
+#standings .br-match-note,
+#bracat .br-match-note,
+.br-match-note {
+  margin-top: 10px;
+  color: var(--br-muted);
+  font-size: 0.72rem;
+  line-height: 1.55;
+}
+
+/* ==========================================================
+   CHAMPION SECTION
+   ========================================================== */
+
+#standings .br-champion,
+#brackets .br-champion,
+#bracat .br-champion,
+.br-champion {
+  position: relative;
+  padding: 30px 22px;
+  overflow: hidden;
+  border: 1px solid rgba(251, 191, 36, 0.25);
+  border-radius: 19px;
+  background:
+    radial-gradient(
+      circle at top center,
+      rgba(251, 191, 36, 0.13),
+      transparent 58%
+    ),
+    linear-gradient(145deg, #172238, #0d1527);
+  text-align: center;
+}
+
+#standings .br-champion-icon,
+#brackets .br-champion-icon,
+#bracat .br-champion-icon,
+.br-champion-icon {
+  display: grid;
+  width: 70px;
+  height: 70px;
+  place-items: center;
+  margin: 0 auto 15px;
+  border: 1px solid rgba(251, 191, 36, 0.22);
+  border-radius: 22px;
+  color: #fcd34d;
+  background: rgba(251, 191, 36, 0.1);
+  font-size: 2rem;
+}
+
+#standings .br-champion h2,
+#brackets .br-champion h2,
+#bracat .br-champion h2,
+.br-champion h2 {
+  margin: 0 0 9px;
+  color: #fcd34d;
+  font-size: clamp(1.3rem, 3vw, 1.8rem);
+  font-weight: 900;
+}
+
+#standings .br-champion p,
+#brackets .br-champion p,
+#bracat .br-champion p,
+.br-champion p {
+  margin: 0;
+  color: #cbd5e1;
+  font-size: 0.88rem;
+  line-height: 1.7;
+}
+
+#standings .br-champion-team,
+#brackets .br-champion-team,
+#bracat .br-champion-team,
+.br-champion-team {
+  margin-top: 12px;
+  color: #f8fafc;
+  font-size: clamp(1.15rem, 3vw, 1.6rem);
+  font-weight: 900;
+  overflow-wrap: anywhere;
+}
+
+/* ==========================================================
+   EMPTY STATE
+   ========================================================== */
+
+#standings .br-empty,
+#standings .br-empty-state,
+#brackets .br-empty,
+#brackets .br-empty-state,
+#bracat .br-empty,
+#bracat .br-empty-state {
+  padding: 38px 20px;
+  border: 1px dashed var(--br-border);
+  border-radius: 15px;
+  color: var(--br-muted);
+  text-align: center;
+  line-height: 1.7;
+}
+
+#standings .br-empty i,
+#standings .br-empty-state i,
+#brackets .br-empty i,
+#brackets .br-empty-state i,
+#bracat .br-empty i,
+#bracat .br-empty-state i {
+  display: block;
+  margin-bottom: 14px;
+  color: #64748b;
+  font-size: 2.1rem;
+}
+
+#standings .br-empty h3,
+#standings .br-empty-state h3,
+#brackets .br-empty h3,
+#brackets .br-empty-state h3,
+#bracat .br-empty h3,
+#bracat .br-empty-state h3 {
+  margin: 0 0 8px;
+  color: #e2e8f0;
+  font-size: 1rem;
+}
+
+#standings .br-empty p,
+#standings .br-empty-state p,
+#brackets .br-empty p,
+#brackets .br-empty-state p,
+#bracat .br-empty p,
+#bracat .br-empty-state p {
+  margin: 0;
+  color: var(--br-muted);
+  font-size: 0.84rem;
+}
+
+/* ==========================================================
+   UTILITY
+   ========================================================== */
+
+#standings .br-muted,
+#brackets .br-muted,
+#bracat .br-muted {
+  color: var(--br-muted);
+}
+
+#standings .br-divider,
+#brackets .br-divider,
+#bracat .br-divider {
+  height: 1px;
+  margin: 18px 0;
+  border: 0;
+  background: var(--br-border);
+}
+
+#standings .br-inline,
+#brackets .br-inline,
+#bracat .br-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#standings .br-wrap,
+#brackets .br-wrap,
+#bracat .br-wrap {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* ==========================================================
+   TABLET
+   ========================================================== */
+
+@media (max-width: 1050px) {
+  #standings,
+  #brackets,
+  #bracat {
+    padding: 20px;
+  }
+
+  #standings .br-stats,
+  #standings .br-stats-grid,
+  #brackets .br-stats,
+  #brackets .br-stats-grid,
+  #bracat .br-stats,
+  #bracat .br-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  #standings .br-groups,
+  #standings .br-group-grid,
+  #bracat .br-groups,
+  #bracat .br-group-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================
+   MOBILE
+   ========================================================== */
+
+@media (max-width: 700px) {
+  #standings,
+  #brackets,
+  #bracat {
+    padding: 15px;
+  }
+
+  #standings .br-panel,
+  #brackets .br-panel,
+  #bracat .br-panel {
+    padding: 15px;
+    border-radius: 14px;
+  }
+
+  #standings .br-stats,
+  #standings .br-stats-grid,
+  #brackets .br-stats,
+  #brackets .br-stats-grid,
+  #bracat .br-stats,
+  #bracat .br-stats-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  #standings .br-stat-card,
+  #brackets .br-stat-card,
+  #bracat .br-stat-card {
+    padding: 14px;
+  }
+
+  #standings .br-controls,
+  #standings .br-toolbar,
+  #brackets .br-controls,
+  #brackets .br-toolbar,
+  #bracat .br-controls,
+  #bracat .br-toolbar {
+    align-items: stretch;
+  }
+
+  #standings .br-control,
+  #brackets .br-control,
+  #bracat .br-control {
+    flex-basis: 100%;
+  }
+
+  #standings .br-bracket,
+  #brackets .br-bracket,
+  #bracat .br-bracket,
+  .br-bracket {
+    gap: 17px;
+  }
+
+  #standings .br-round,
+  #brackets .br-round,
+  #bracat .br-round,
+  .br-bracket .br-round {
+    flex-basis: 225px;
+    min-width: 225px;
+  }
+
+  #standings .br-champion,
+  #brackets .br-champion,
+  #bracat .br-champion,
+  .br-champion {
+    padding: 24px 15px;
+  }
+
+  #standings .br-champion-icon,
+  #brackets .br-champion-icon,
+  #bracat .br-champion-icon,
+  .br-champion-icon {
+    width: 58px;
+    height: 58px;
+    border-radius: 18px;
+    font-size: 1.7rem;
+  }
+}
+
+/* ==========================================================
+   SMALL PHONES
+   ========================================================== */
+
+@media (max-width: 380px) {
+  #standings,
+  #brackets,
+  #bracat {
+    padding: 10px;
+  }
+
+  #standings .br-panel,
+  #brackets .br-panel,
+  #bracat .br-panel {
+    padding: 12px;
+  }
+
+  #standings .br-group-card,
+  #bracat .br-group-card {
+    padding: 12px;
+  }
+
+  #standings .br-table th,
+  #standings .br-table td,
+  #standings table th,
+  #standings table td,
+  #bracat .br-table th,
+  #bracat .br-table td,
+  #bracat table th,
+  #bracat table td {
+    padding: 10px 9px;
+  }
+}
+
+/* ==========================================================
+   REDUCED MOTION
+   ========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  #standings *,
+  #brackets *,
+  #bracat *,
+  .br-bracket * {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

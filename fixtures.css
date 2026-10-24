@@ -1,0 +1,1080 @@
+/* ==========================================================
+   MATCHCRAFT — FIXTURES & RESULTS
+   File: fixtures.css
+   Premium Dark Responsive UI
+   ========================================================== */
+
+/* ---------- Base / Page ---------- */
+
+#fixtures {
+  --fx-bg: #0b1020;
+  --fx-panel: #121a2c;
+  --fx-panel-soft: #172238;
+  --fx-border: rgba(148, 163, 184, 0.17);
+  --fx-text: #f1f5f9;
+  --fx-muted: #94a3b8;
+  --fx-primary: #38bdf8;
+  --fx-primary-dark: #0284c7;
+  --fx-green: #34d399;
+  --fx-orange: #fbbf24;
+  --fx-red: #fb7185;
+
+  color: var(--fx-text);
+  width: 100%;
+  min-width: 0;
+  padding: 24px;
+  box-sizing: border-box;
+  font-family: "Inter", "Hind Siliguri", sans-serif;
+}
+
+#fixtures *,
+#fixtures *::before,
+#fixtures *::after {
+  box-sizing: border-box;
+}
+
+#fixtures [hidden] {
+  display: none !important;
+}
+
+#fixtures h1,
+#fixtures h2,
+#fixtures h3,
+#fixtures h4,
+#fixtures p {
+  margin-top: 0;
+}
+
+#fixtures button,
+#fixtures input,
+#fixtures select,
+#fixtures textarea {
+  font: inherit;
+}
+
+#fixtures button {
+  cursor: pointer;
+}
+
+#fixtures input,
+#fixtures select,
+#fixtures textarea {
+  min-width: 0;
+  max-width: 100%;
+}
+
+#fixtures input:focus,
+#fixtures select:focus,
+#fixtures textarea:focus {
+  outline: 2px solid rgba(56, 189, 248, 0.65);
+  outline-offset: 2px;
+}
+
+/* ---------- Main Heading ---------- */
+
+#fixtures .fixtures-header,
+#fixtures .fixtures-page-header,
+#fixtures .fixtures-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-bottom: 26px;
+}
+
+#fixtures .fixtures-header h1,
+#fixtures .fixtures-page-header h1,
+#fixtures .fixtures-title-row h1 {
+  margin-bottom: 7px;
+  font-size: clamp(1.55rem, 3vw, 2.15rem);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  color: #f8fafc;
+}
+
+#fixtures .fixtures-header p,
+#fixtures .fixtures-page-header p,
+#fixtures .fixtures-title-row p {
+  margin-bottom: 0;
+  color: var(--fx-muted);
+  font-size: 0.92rem;
+  line-height: 1.65;
+}
+
+#fixtures .fixtures-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 9px;
+  color: var(--fx-primary);
+  font-size: 0.73rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+#fixtures .fixtures-eyebrow i {
+  font-size: 0.95rem;
+}
+
+/* ---------- Shared Panels ---------- */
+
+#fixtures .fixtures-panel,
+#fixtures .fixtures-card,
+#fixtures .fixtures-section,
+#fixtures .fixtures-stat-card,
+#fixtures .fixtures-ground-card,
+#fixtures .fixtures-match-card {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(23, 34, 56, 0.96),
+      rgba(15, 23, 42, 0.98)
+    );
+  border: 1px solid var(--fx-border);
+  border-radius: 18px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.13);
+}
+
+#fixtures .fixtures-panel,
+#fixtures .fixtures-section {
+  padding: 22px;
+  margin-bottom: 22px;
+}
+
+#fixtures .fixtures-panel-heading,
+#fixtures .fixtures-section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+#fixtures .fixtures-panel-heading h2,
+#fixtures .fixtures-section-heading h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 7px;
+  color: var(--fx-text);
+  font-size: 1.12rem;
+  font-weight: 750;
+}
+
+#fixtures .fixtures-panel-heading h2 i,
+#fixtures .fixtures-section-heading h2 i {
+  color: var(--fx-primary);
+}
+
+#fixtures .fixtures-panel-heading p,
+#fixtures .fixtures-section-heading p {
+  margin-bottom: 0;
+  color: var(--fx-muted);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+/* ---------- Statistics ---------- */
+
+#fixtures .fixtures-stats,
+#fixtures .fixtures-stats-grid,
+#fixtures .fixtures-overview {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 25px;
+}
+
+#fixtures .fixtures-stat-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  min-height: 112px;
+  padding: 20px;
+  overflow: hidden;
+}
+
+#fixtures .fixtures-stat-card::after {
+  content: "";
+  position: absolute;
+  width: 85px;
+  height: 85px;
+  right: -28px;
+  bottom: -38px;
+  border-radius: 50%;
+  background: rgba(56, 189, 248, 0.07);
+  pointer-events: none;
+}
+
+#fixtures .fixtures-stat-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 48px;
+  width: 48px;
+  height: 48px;
+  border-radius: 15px;
+  color: #7dd3fc;
+  background: rgba(56, 189, 248, 0.13);
+  font-size: 1.25rem;
+}
+
+#fixtures .fixtures-stat-icon.green {
+  color: #6ee7b7;
+  background: rgba(52, 211, 153, 0.13);
+}
+
+#fixtures .fixtures-stat-icon.orange {
+  color: #fcd34d;
+  background: rgba(251, 191, 36, 0.13);
+}
+
+#fixtures .fixtures-stat-card .fixtures-stat-label,
+#fixtures .fixtures-stat-card .stat-label {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--fx-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+#fixtures .fixtures-stat-card strong,
+#fixtures .fixtures-stat-card .stat-value {
+  display: block;
+  color: #f8fafc;
+  font-size: 1.7rem;
+  line-height: 1.2;
+  font-weight: 800;
+}
+
+/* ---------- Buttons ---------- */
+
+#fixtures .fixtures-btn,
+#fixtures .fixtures-primary-btn,
+#fixtures .fixtures-secondary-btn,
+#fixtures .fixtures-danger-btn,
+#fixtures .fixtures-ghost-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 43px;
+  padding: 11px 16px;
+  border: 1px solid transparent;
+  border-radius: 11px;
+  font-size: 0.86rem;
+  font-weight: 750;
+  line-height: 1.25;
+  text-decoration: none;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+#fixtures .fixtures-btn:hover,
+#fixtures .fixtures-primary-btn:hover,
+#fixtures .fixtures-secondary-btn:hover,
+#fixtures .fixtures-danger-btn:hover,
+#fixtures .fixtures-ghost-btn:hover {
+  transform: translateY(-1px);
+}
+
+#fixtures .fixtures-btn-primary,
+#fixtures .fixtures-primary-btn {
+  color: #061522;
+  background: linear-gradient(135deg, #7dd3fc, #38bdf8);
+  box-shadow: 0 6px 18px rgba(56, 189, 248, 0.12);
+}
+
+#fixtures .fixtures-btn-primary:hover,
+#fixtures .fixtures-primary-btn:hover {
+  background: linear-gradient(135deg, #bae6fd, #38bdf8);
+  box-shadow: 0 8px 24px rgba(56, 189, 248, 0.2);
+}
+
+#fixtures .fixtures-btn-secondary,
+#fixtures .fixtures-secondary-btn {
+  color: #e2e8f0;
+  background: rgba(148, 163, 184, 0.08);
+  border-color: var(--fx-border);
+}
+
+#fixtures .fixtures-btn-secondary:hover,
+#fixtures .fixtures-secondary-btn:hover {
+  background: rgba(148, 163, 184, 0.15);
+  border-color: rgba(148, 163, 184, 0.32);
+}
+
+#fixtures .fixtures-btn-danger,
+#fixtures .fixtures-danger-btn {
+  color: #fecdd3;
+  background: rgba(251, 113, 133, 0.1);
+  border-color: rgba(251, 113, 133, 0.25);
+}
+
+#fixtures .fixtures-btn-danger:hover,
+#fixtures .fixtures-danger-btn:hover {
+  background: rgba(251, 113, 133, 0.18);
+}
+
+#fixtures .fixtures-btn-ghost,
+#fixtures .fixtures-ghost-btn {
+  color: #cbd5e1;
+  background: transparent;
+  border-color: var(--fx-border);
+}
+
+#fixtures button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  transform: none;
+}
+
+/* ---------- Form ---------- */
+
+#fixtures .fixtures-form-grid,
+#fixtures .fixtures-fields,
+#fixtures .fixtures-form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+#fixtures .fixtures-form-grid .full-width,
+#fixtures .fixtures-fields .full-width,
+#fixtures .fixtures-form-row .full-width {
+  grid-column: 1 / -1;
+}
+
+#fixtures .fixtures-form-group,
+#fixtures .fixtures-field,
+#fixtures .fixtures-form-grid > label,
+#fixtures .fixtures-fields > label,
+#fixtures .fixtures-form-row > label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  color: #cbd5e1;
+  font-size: 0.83rem;
+  font-weight: 650;
+}
+
+#fixtures .fixtures-form-group input,
+#fixtures .fixtures-form-group select,
+#fixtures .fixtures-form-group textarea,
+#fixtures .fixtures-field input,
+#fixtures .fixtures-field select,
+#fixtures .fixtures-field textarea,
+#fixtures .fixtures-form-grid input,
+#fixtures .fixtures-form-grid select,
+#fixtures .fixtures-form-grid textarea,
+#fixtures .fixtures-fields input,
+#fixtures .fixtures-fields select,
+#fixtures .fixtures-fields textarea,
+#fixtures .fixtures-form-row input,
+#fixtures .fixtures-form-row select,
+#fixtures .fixtures-form-row textarea {
+  width: 100%;
+  min-height: 45px;
+  padding: 11px 13px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 10px;
+  color: #f1f5f9;
+  background: #0d1527;
+  font-size: 0.87rem;
+  font-weight: 450;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+#fixtures input::placeholder,
+#fixtures textarea::placeholder {
+  color: #64748b;
+}
+
+#fixtures select option {
+  color: #f1f5f9;
+  background: #0d1527;
+}
+
+#fixtures .fixtures-form-group textarea,
+#fixtures .fixtures-field textarea,
+#fixtures .fixtures-form-grid textarea,
+#fixtures .fixtures-fields textarea,
+#fixtures .fixtures-form-row textarea {
+  min-height: 95px;
+  resize: vertical;
+}
+
+#fixtures .fixtures-form-actions,
+#fixtures .fixtures-actions,
+#fixtures .fixtures-form-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 21px;
+}
+
+#fixtures .fixtures-help-text,
+#fixtures .fixtures-field-help {
+  color: var(--fx-muted);
+  font-size: 0.75rem;
+  font-weight: 450;
+  line-height: 1.5;
+}
+
+/* ---------- Existing HTML: Ground Management ---------- */
+
+#fixtures #fixturesGroundGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+#fixtures #fixturesGroundGrid:empty::after {
+  content: "No grounds have been added yet.";
+  display: block;
+  grid-column: 1 / -1;
+  padding: 28px 15px;
+  text-align: center;
+  color: var(--fx-muted);
+  border: 1px dashed var(--fx-border);
+  border-radius: 13px;
+}
+
+#fixtures #fixturesGroundGrid > * {
+  min-width: 0;
+}
+
+#fixtures .fixtures-ground-card {
+  position: relative;
+  min-width: 0;
+  padding: 17px;
+  overflow: hidden;
+}
+
+#fixtures .fixtures-ground-card:hover {
+  border-color: rgba(56, 189, 248, 0.35);
+}
+
+#fixtures .fixtures-ground-card h3,
+#fixtures .fixtures-ground-card h4 {
+  margin-bottom: 8px;
+  color: #f8fafc;
+  font-size: 1rem;
+  overflow-wrap: anywhere;
+}
+
+#fixtures .fixtures-ground-card p {
+  margin-bottom: 8px;
+  color: var(--fx-muted);
+  font-size: 0.81rem;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+#fixtures .fixtures-ground-card img {
+  display: block;
+  width: 100%;
+  max-height: 170px;
+  margin-bottom: 13px;
+  border-radius: 11px;
+  object-fit: cover;
+}
+
+#fixtures .fixtures-ground-card .fixtures-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+#fixtures .fixtures-ground-card button {
+  min-height: 34px;
+  padding: 7px 10px;
+  border: 1px solid var(--fx-border);
+  border-radius: 8px;
+  color: #cbd5e1;
+  background: rgba(148, 163, 184, 0.08);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+#fixtures .fixtures-ground-card button:hover {
+  border-color: rgba(56, 189, 248, 0.4);
+}
+
+/* ---------- Existing HTML: Match Form ---------- */
+
+#fixtures #fixturesMatchForm {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 17px;
+}
+
+#fixtures #fixturesMatchForm > label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  color: #cbd5e1;
+  font-size: 0.82rem;
+  font-weight: 650;
+}
+
+#fixtures #fixturesMatchForm input,
+#fixtures #fixturesMatchForm select,
+#fixtures #fixturesMatchForm textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 11px 13px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 10px;
+  color: #f1f5f9;
+  background: #0d1527;
+  font-size: 0.87rem;
+}
+
+#fixtures #fixturesMatchForm textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+#fixtures #fixturesMatchForm button,
+#fixtures #fixturesMatchForm .fixtures-form-actions {
+  align-self: end;
+}
+
+#fixtures #fixturesSaveMatchBtn {
+  min-height: 45px;
+  padding: 11px 17px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  color: #061522;
+  background: linear-gradient(135deg, #7dd3fc, #38bdf8);
+  font-weight: 800;
+}
+
+#fixtures #fixturesCancelEditBtn,
+#fixtures #fixturesResetMatchBtn {
+  min-height: 42px;
+  padding: 10px 14px;
+  border: 1px solid var(--fx-border);
+  border-radius: 10px;
+  color: #cbd5e1;
+  background: rgba(148, 163, 184, 0.08);
+  font-weight: 700;
+}
+
+/* ---------- Existing HTML: Search & Filters ---------- */
+
+#fixtures .fixtures-search-row,
+#fixtures .fixtures-toolbar,
+#fixtures .fixtures-filter-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+#fixtures #fixturesMatchSearch {
+  flex: 1 1 240px;
+  width: 100%;
+  min-height: 45px;
+  padding: 11px 14px;
+  border: 1px solid var(--fx-border);
+  border-radius: 11px;
+  color: var(--fx-text);
+  background: #0d1527;
+}
+
+#fixtures #fixturesMatchStatusFilter {
+  flex: 0 1 190px;
+  width: 100%;
+  min-height: 45px;
+  padding: 10px 13px;
+  border: 1px solid var(--fx-border);
+  border-radius: 11px;
+  color: var(--fx-text);
+  background: #0d1527;
+}
+
+/* ---------- Existing HTML: Fixture List ---------- */
+
+#fixtures #fixturesMatchList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+#fixtures #fixturesMatchList:empty::after {
+  content: "No fixtures to display. Create a fixture to get started.";
+  display: block;
+  grid-column: 1 / -1;
+  padding: 35px 15px;
+  text-align: center;
+  color: var(--fx-muted);
+  border: 1px dashed var(--fx-border);
+  border-radius: 14px;
+  line-height: 1.7;
+}
+
+#fixtures #fixturesMatchList > * {
+  min-width: 0;
+}
+
+#fixtures .fixtures-match-card {
+  position: relative;
+  min-width: 0;
+  padding: 18px;
+  overflow: hidden;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+#fixtures .fixtures-match-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(56, 189, 248, 0.33);
+}
+
+#fixtures .fixtures-match-card h3,
+#fixtures .fixtures-match-card h4 {
+  color: #f8fafc;
+  overflow-wrap: anywhere;
+}
+
+#fixtures .fixtures-match-card p {
+  color: var(--fx-muted);
+  font-size: 0.82rem;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+#fixtures .fixtures-match-card .fixtures-match-top,
+#fixtures .fixtures-match-card .fixtures-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+#fixtures .fixtures-match-card .fixtures-match-teams,
+#fixtures .fixtures-match-card .fixtures-teams {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  margin: 17px 0;
+}
+
+#fixtures .fixtures-match-card .fixtures-team,
+#fixtures .fixtures-match-card .fixtures-team-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  text-align: center;
+}
+
+#fixtures .fixtures-match-card .fixtures-team img,
+#fixtures .fixtures-match-card .fixtures-team-info img,
+#fixtures .fixtures-match-card .team-logo {
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--fx-border);
+  border-radius: 50%;
+  background: rgba(148, 163, 184, 0.08);
+  object-fit: cover;
+}
+
+#fixtures .fixtures-match-card .fixtures-team strong,
+#fixtures .fixtures-match-card .fixtures-team-info strong {
+  color: #e2e8f0;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+#fixtures .fixtures-match-card .fixtures-vs {
+  color: #64748b;
+  font-size: 0.72rem;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+}
+
+#fixtures .fixtures-match-card .fixtures-match-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 11px;
+  padding-top: 15px;
+  border-top: 1px solid var(--fx-border);
+}
+
+#fixtures .fixtures-match-card .fixtures-match-meta > *,
+#fixtures .fixtures-match-card .fixtures-meta-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: var(--fx-muted);
+  font-size: 0.77rem;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+#fixtures .fixtures-match-card .fixtures-match-meta i,
+#fixtures .fixtures-match-card .fixtures-meta-item i {
+  flex: 0 0 auto;
+  margin-top: 3px;
+  color: var(--fx-primary);
+}
+
+#fixtures .fixtures-match-card .fixtures-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 17px;
+}
+
+#fixtures .fixtures-match-card .fixtures-card-actions button {
+  min-height: 35px;
+  padding: 8px 11px;
+  border: 1px solid var(--fx-border);
+  border-radius: 9px;
+  color: #cbd5e1;
+  background: rgba(148, 163, 184, 0.08);
+  font-size: 0.75rem;
+  font-weight: 750;
+}
+
+#fixtures .fixtures-match-card .fixtures-card-actions button:hover {
+  border-color: rgba(56, 189, 248, 0.4);
+}
+
+/* ---------- Status Badges ---------- */
+
+#fixtures .fixtures-status,
+#fixtures .fixtures-status-badge,
+#fixtures .fixtures-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  max-width: 100%;
+  padding: 6px 10px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 0.69rem;
+  font-weight: 800;
+  line-height: 1.3;
+  white-space: normal;
+}
+
+#fixtures .fixtures-status.upcoming,
+#fixtures .fixtures-status-badge.upcoming,
+#fixtures .fixtures-badge.upcoming {
+  color: #7dd3fc;
+  background: rgba(56, 189, 248, 0.1);
+  border-color: rgba(56, 189, 248, 0.18);
+}
+
+#fixtures .fixtures-status.completed,
+#fixtures .fixtures-status-badge.completed,
+#fixtures .fixtures-badge.completed {
+  color: #6ee7b7;
+  background: rgba(52, 211, 153, 0.1);
+  border-color: rgba(52, 211, 153, 0.18);
+}
+
+#fixtures .fixtures-status.cancelled,
+#fixtures .fixtures-status-badge.cancelled,
+#fixtures .fixtures-badge.cancelled {
+  color: #fda4af;
+  background: rgba(251, 113, 133, 0.1);
+  border-color: rgba(251, 113, 133, 0.18);
+}
+
+#fixtures .fixtures-status.live,
+#fixtures .fixtures-status-badge.live,
+#fixtures .fixtures-badge.live {
+  color: #fcd34d;
+  background: rgba(251, 191, 36, 0.1);
+  border-color: rgba(251, 191, 36, 0.18);
+}
+
+/* ---------- Empty States ---------- */
+
+#fixtures .fixtures-empty,
+#fixtures .fixtures-empty-state,
+#fixtures #fixturesMatchesEmpty {
+  padding: 35px 18px;
+  color: var(--fx-muted);
+  text-align: center;
+  border: 1px dashed var(--fx-border);
+  border-radius: 14px;
+  line-height: 1.7;
+}
+
+#fixtures .fixtures-empty i,
+#fixtures .fixtures-empty-state i,
+#fixtures #fixturesMatchesEmpty i {
+  display: block;
+  margin-bottom: 13px;
+  color: #64748b;
+  font-size: 2rem;
+}
+
+#fixtures .fixtures-empty h3,
+#fixtures .fixtures-empty-state h3 {
+  margin-bottom: 8px;
+  color: #e2e8f0;
+  font-size: 1rem;
+}
+
+#fixtures .fixtures-empty p,
+#fixtures .fixtures-empty-state p {
+  margin-bottom: 0;
+  color: var(--fx-muted);
+  font-size: 0.84rem;
+}
+
+/* ---------- Dialog / Modal Support ---------- */
+
+#fixtures .fixtures-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(2, 6, 23, 0.78);
+  backdrop-filter: blur(7px);
+}
+
+#fixtures .fixtures-modal {
+  width: min(100%, 560px);
+  max-height: min(88vh, 780px);
+  overflow: auto;
+  padding: 24px;
+  border: 1px solid var(--fx-border);
+  border-radius: 18px;
+  background: #121a2c;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
+}
+
+#fixtures .fixtures-modal h2 {
+  margin-bottom: 9px;
+  color: #f8fafc;
+  font-size: 1.2rem;
+}
+
+#fixtures .fixtures-modal p {
+  color: var(--fx-muted);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+/* ---------- Utility ---------- */
+
+#fixtures .fixtures-muted {
+  color: var(--fx-muted);
+}
+
+#fixtures .fixtures-divider {
+  height: 1px;
+  margin: 18px 0;
+  border: 0;
+  background: var(--fx-border);
+}
+
+#fixtures .fixtures-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#fixtures .fixtures-wrap {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+#fixtures .fixtures-scroll-x {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* ---------- Tablet ---------- */
+
+@media (max-width: 1050px) {
+  #fixtures {
+    padding: 20px;
+  }
+
+  #fixtures #fixturesGroundGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  #fixtures #fixturesMatchList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  #fixtures .fixtures-stats,
+  #fixtures .fixtures-stats-grid,
+  #fixtures .fixtures-overview {
+    gap: 12px;
+  }
+
+  #fixtures .fixtures-stat-card {
+    padding: 16px;
+  }
+}
+
+/* ---------- Mobile ---------- */
+
+@media (max-width: 700px) {
+  #fixtures {
+    padding: 15px;
+  }
+
+  #fixtures .fixtures-header,
+  #fixtures .fixtures-page-header,
+  #fixtures .fixtures-title-row {
+    align-items: flex-start;
+  }
+
+  #fixtures .fixtures-panel,
+  #fixtures .fixtures-section {
+    padding: 16px;
+    border-radius: 15px;
+  }
+
+  #fixtures .fixtures-stats,
+  #fixtures .fixtures-stats-grid,
+  #fixtures .fixtures-overview {
+    grid-template-columns: 1fr;
+    gap: 11px;
+  }
+
+  #fixtures .fixtures-stat-card {
+    min-height: 90px;
+    padding: 15px;
+  }
+
+  #fixtures .fixtures-stat-card strong,
+  #fixtures .fixtures-stat-card .stat-value {
+    font-size: 1.45rem;
+  }
+
+  #fixtures .fixtures-form-grid,
+  #fixtures .fixtures-fields,
+  #fixtures .fixtures-form-row {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  #fixtures #fixturesMatchForm {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  #fixtures #fixturesGroundGrid,
+  #fixtures #fixturesMatchList {
+    grid-template-columns: 1fr;
+  }
+
+  #fixtures .fixtures-form-actions,
+  #fixtures .fixtures-actions,
+  #fixtures .fixtures-form-buttons {
+    justify-content: stretch;
+  }
+
+  #fixtures .fixtures-form-actions button,
+  #fixtures .fixtures-actions button,
+  #fixtures .fixtures-form-buttons button {
+    flex: 1 1 auto;
+  }
+
+  #fixtures .fixtures-match-card {
+    padding: 15px;
+  }
+
+  #fixtures .fixtures-match-card .fixtures-match-meta {
+    grid-template-columns: 1fr;
+    gap: 9px;
+  }
+
+  #fixtures .fixtures-match-card .fixtures-team img,
+  #fixtures .fixtures-match-card .fixtures-team-info img,
+  #fixtures .fixtures-match-card .team-logo {
+    width: 42px;
+    height: 42px;
+  }
+
+  #fixtures .fixtures-search-row,
+  #fixtures .fixtures-toolbar,
+  #fixtures .fixtures-filter-row {
+    align-items: stretch;
+  }
+
+  #fixtures #fixturesMatchSearch,
+  #fixtures #fixturesMatchStatusFilter {
+    flex: 1 1 100%;
+    width: 100%;
+  }
+
+  #fixtures .fixtures-btn,
+  #fixtures .fixtures-primary-btn,
+  #fixtures .fixtures-secondary-btn,
+  #fixtures .fixtures-danger-btn,
+  #fixtures .fixtures-ghost-btn {
+    min-height: 42px;
+  }
+}
+
+/* ---------- Small Phones ---------- */
+
+@media (max-width: 380px) {
+  #fixtures {
+    padding: 11px;
+  }
+
+  #fixtures .fixtures-panel,
+  #fixtures .fixtures-section {
+    padding: 12px;
+  }
+
+  #fixtures .fixtures-match-card {
+    padding: 12px;
+  }
+
+  #fixtures .fixtures-match-card .fixtures-match-teams,
+  #fixtures .fixtures-match-card .fixtures-teams {
+    gap: 5px;
+  }
+
+  #fixtures .fixtures-match-card .fixtures-team strong,
+  #fixtures .fixtures-match-card .fixtures-team-info strong {
+    font-size: 0.75rem;
+  }
+}
+
+/* ---------- Reduced Motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  #fixtures *,
+  #fixtures *::before,
+  #fixtures *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
