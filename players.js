@@ -1155,6 +1155,84 @@
     }
 
     // ==========================================
+    // PENALTY SHOOTOUT PLAYER STATISTICS
+    // ==========================================
+
+    function getPlayerPenaltyStats(playerId) {
+        const stats = {
+            goals: 0,
+            misses: 0,
+            totalShots: 0,
+            conversionRate: 0
+        };
+
+        const prefix = "matchcraft_penalty_";
+        const playerKey = String(playerId);
+
+        try {
+            for (let i = 0; i < localStorage.length; i++) {
+                const storageKey = localStorage.key(i);
+
+                if (!storageKey || !storageKey.startsWith(prefix)) {
+                    continue;
+                }
+
+                let state;
+
+                try {
+                    state = JSON.parse(
+                        localStorage.getItem(storageKey) || "null"
+                    );
+                } catch (error) {
+                    console.error(
+                        "Could not read penalty statistics:",
+                        storageKey,
+                        error
+                    );
+                    continue;
+                }
+
+                if (!state || typeof state !== "object") continue;
+
+                // history-তে প্রতিটি শট একবারই গণনা করা হবে।
+                // পুরোনো ডেটায় history না থাকলে home/away ব্যবহার হবে।
+                let shots = Array.isArray(state.history)
+                    ? state.history
+                    : [
+                        ...(Array.isArray(state.home) ? state.home : []),
+                        ...(Array.isArray(state.away) ? state.away : [])
+                    ];
+
+                shots.forEach(shot => {
+                    if (
+                        !shot ||
+                        shot.playerId == null ||
+                        String(shot.playerId) !== playerKey
+                    ) {
+                        return;
+                    }
+
+                    stats.totalShots++;
+
+                    if (shot.goal === true) {
+                        stats.goals++;
+                    } else {
+                        stats.misses++;
+                    }
+                });
+            }
+        } catch (error) {
+            console.error("Penalty statistics error:", error);
+        }
+
+        stats.conversionRate = stats.totalShots > 0
+            ? Math.round((stats.goals / stats.totalShots) * 100)
+            : 0;
+
+        return stats;
+    }
+
+    // ==========================================
     // RENDER PLAYER DETAILS PAGE
     // ==========================================
 
@@ -1191,6 +1269,8 @@
                 >${escapeHTML(getInitials(player.name))}</div>
             `;
 
+        const penaltyStats = getPlayerPenaltyStats(player.id);
+
         const stats = [
             ["Matches Played", player.matchesPlayed],
             ["Goals", player.goals],
@@ -1198,7 +1278,13 @@
             ["Yellow Cards", player.yellowCards],
             ["Red Cards", player.redCards],
             ["Clean Sheets", player.cleanSheets],
-            ["Goalkeeper Saves", player.saves]
+            ["Goalkeeper Saves", player.saves],
+
+            // Separate penalty shootout statistics
+            ["Penalty Goals", penaltyStats.goals],
+            ["Penalty Misses", penaltyStats.misses],
+            ["Total Penalty Shots", penaltyStats.totalShots],
+            ["Penalty Conversion Rate", penaltyStats.conversionRate + "%"]
         ];
 
         playerList.innerHTML = `

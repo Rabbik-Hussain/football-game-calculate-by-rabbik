@@ -815,6 +815,90 @@
                         </div>
                     </div>
 
+                    <section class="mc-match-panel" id="mcPenaltyPanel" hidden>
+                        <div class="mc-match-panel-header">
+                            <div class="mc-match-panel-heading">
+                                <h2 class="mc-match-panel-title">
+                                    <i class="fa-solid fa-bullseye"></i>
+                                    Penalty Shootout
+                                </h2>
+                                <p class="mc-match-panel-description">
+                                    Record each penalty separately from the match score.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="mc-match-score-edit-grid">
+                            <div class="mc-match-score-edit-team">
+                                <label id="mcPenaltyHomeLabel">Home Team</label>
+                                <p id="mcPenaltyHomeScore">0</p>
+                            </div>
+                            <div class="mc-match-score-edit-team">
+                                <label id="mcPenaltyAwayLabel">Away Team</label>
+                                <p id="mcPenaltyAwayScore">0</p>
+                            </div>
+                        </div>
+
+                        <div class="mc-match-field">
+                            <label class="mc-match-label" for="mcPenaltyShotCount">
+                                Initial shots per team
+                            </label>
+                            <input class="mc-match-input"
+                                   id="mcPenaltyShotCount"
+                                   type="number"
+                                   min="1"
+                                   max="20"
+                                   value="5">
+                        </div>
+
+                        <div class="mc-match-field">
+    <label class="mc-match-label" for="mcPenaltyTeam">
+        Shooting Team
+    </label>
+
+    <select class="mc-match-select" id="mcPenaltyTeam">
+        <option value="home">Home Team</option>
+        <option value="away">Away Team</option>
+    </select>
+
+    <div id="mcPenaltySelectedTeamName"
+         class="mc-match-label"
+         style="margin-top: 8px; font-weight: 700;">
+        Home Team
+    </div>
+</div>
+
+                        <div class="mc-match-field">
+                            <label class="mc-match-label" for="mcPenaltyPlayer">
+                                Shooter
+                            </label>
+                            <select class="mc-match-select" id="mcPenaltyPlayer">
+                                <option value="">Select player</option>
+                            </select>
+                        </div>
+
+                        <div class="mc-match-actions">
+                            <button type="button"
+                                    class="mc-match-btn mc-match-btn--primary"
+                                    id="mcPenaltyStart">
+                                Start Penalties
+                            </button>
+                            <button type="button"
+                                    class="mc-match-btn mc-match-btn--secondary"
+                                    id="mcPenaltyGoal">
+                                Goal
+                            </button>
+                            <button type="button"
+                                    class="mc-match-btn mc-match-btn--secondary"
+                                    id="mcPenaltyMiss">
+                                Miss
+                            </button>
+                        </div>
+
+                        <p id="mcPenaltyStatus" aria-live="polite"></p>
+                        <ol id="mcPenaltyHistory"></ol>
+                    </section>
+
                     <div class="mc-match-center-grid">
                         <div class="mc-match-main-column">
 
@@ -3357,107 +3441,159 @@ function getDismissedPlayerIds(session) {
 
     /* -------------------- Fixture Result Synchronization -------------------- */
 
-    function syncFixtureResult(session) {
-  if (!session || !session.fixtureId) {
-    console.warn(
-      "MatchCraft: Cannot sync result without a fixture ID."
-    );
-    return false;
-  }
+function syncFixtureResult(session) {
+    if (!session || !session.fixtureId) {
+        console.warn(
+            "MatchCraft: Cannot sync result without a fixture ID."
+        );
+        return false;
+    }
 
-  const fixtures = getFixtures();
-  const fixtureId = String(session.fixtureId);
+    const fixtureId = String(session.fixtureId);
+    const storageKeys = [
+        KEYS.fixtures,
+        "matchcraft_matches_fixtures",
+        "matchcraft_scheduled_matches"
+    ];
 
-  const fixture = fixtures.find(item =>
-    fixtureIdOf(item) === fixtureId
-  );
+    const fixturesById = new Map();
+    let fixtureFound = false;
 
-  if (!fixture) {
-    console.warn(
-      "MatchCraft: Matching fixture was not found:",
-      fixtureId
-    );
-    return false;
-  }
+    [...new Set(storageKeys)].forEach(key => {
+        const stored = readJSON(key);
+        const fixtures = Array.isArray(stored) ? stored : [];
 
-  const sessionTournamentId = String(
-    session.tournamentId ?? ""
-  );
+        const fixture = fixtures.find(item =>
+            fixtureIdOf(item) === fixtureId
+        );
 
-  const existingTournamentId = fixtureTournamentId(fixture);
+        if (!fixture) return;
 
-  if (
-    sessionTournamentId &&
-    existingTournamentId &&
-    sessionTournamentId !== existingTournamentId
-  ) {
-    console.error(
-      "MatchCraft: Tournament mismatch. Result was not synced."
-    );
-    return false;
-  }
+        const sessionTournamentId = String(
+            session.tournamentId ?? ""
+        );
+        const existingTournamentId = fixtureTournamentId(fixture);
 
-  const homeScore = Number(session.homeScore);
-  const awayScore = Number(session.awayScore);
+        if (
+            sessionTournamentId &&
+            existingTournamentId &&
+            sessionTournamentId !== existingTournamentId
+        ) {
+            console.error(
+                "MatchCraft: Tournament mismatch. Result was not synced."
+            );
+            return;
+        }
 
-  if (
-    !Number.isFinite(homeScore) ||
-    !Number.isFinite(awayScore) ||
-    homeScore < 0 ||
-    awayScore < 0
-  ) {
-    console.warn(
-      "MatchCraft: Invalid final score. Result was not synced."
-    );
-    return false;
-  }
+        const homeScore = Number(session.homeScore);
+        const awayScore = Number(session.awayScore);
 
-  const completedAt =
-    session.completedAt ||
-    session.finishedAt ||
-    new Date().toISOString();
+        if (
+            !Number.isFinite(homeScore) ||
+            !Number.isFinite(awayScore) ||
+            homeScore < 0 ||
+            awayScore < 0
+        ) {
+            console.warn(
+                "MatchCraft: Invalid final score. Result was not synced."
+            );
+            return;
+        }
 
-  fixture.homeScore = homeScore;
-  fixture.awayScore = awayScore;
-  fixture.score = `${homeScore} - ${awayScore}`;
+        const completedAt =
+            session.completedAt ||
+            session.finishedAt ||
+            new Date().toISOString();
 
-  fixture.status = "completed";
-  fixture.matchStatus = "Full-Time";
-  fixture.resultSaved = true;
-  fixture.resultSource = "matchcraft_match_center";
-  fixture.resultSessionId = session.id;
-  fixture.completedAt = completedAt;
-  fixture.updatedAt = new Date().toISOString();
+        const penaltyState = typeof mcGetPenaltyState === "function"
+            ? mcGetPenaltyState(session)
+            : null;
 
-  // Keep the existing fixture storage keys synchronized.
-  writeJSON(KEYS.fixtures, fixtures);
-  writeJSON("matchcraft_matches_fixtures", fixtures);
-  writeJSON("matchcraft_scheduled_matches", fixtures);
+        const penaltyFinished = Boolean(
+            homeScore === awayScore &&
+            penaltyState?.started &&
+            penaltyState?.winner
+        );
 
-  window.dispatchEvent(
-    new CustomEvent("matchcraft:fixtures-updated", {
-      detail: {
-        fixtures,
+        const penaltyHomeScore = penaltyFinished
+            ? penaltyState.home.filter(shot => shot.goal).length
+            : null;
+
+        const penaltyAwayScore = penaltyFinished
+            ? penaltyState.away.filter(shot => shot.goal).length
+            : null;
+
+        const penaltyWinnerTeamId = penaltyFinished
+            ? (
+                penaltyState.winner === "home"
+                    ? session.homeTeamId
+                    : session.awayTeamId
+            )
+            : null;
+
+        Object.assign(fixture, {
+            homeScore,
+            awayScore,
+            score: `${homeScore} - ${awayScore}`,
+            status: "completed",
+            matchStatus: "Full-Time",
+            resultSaved: true,
+            resultSource: "matchcraft_match_center",
+            resultSessionId: session.id,
+            completedAt,
+            updatedAt: new Date().toISOString(),
+
+            penaltyShootout: penaltyFinished,
+            penaltyHomeScore,
+            penaltyAwayScore,
+            penaltyWinner: penaltyFinished
+                ? penaltyState.winner
+                : null,
+            penaltyWinnerTeamId
+        });
+
+        fixturesById.set(key, fixtures);
+        fixtureFound = true;
+    });
+
+    if (!fixtureFound) {
+        console.warn(
+            "MatchCraft: Matching fixture was not found:",
+            fixtureId
+        );
+        return false;
+    }
+
+    fixturesById.forEach((fixtures, key) => {
+        writeJSON(key, fixtures);
+    });
+
+    const detail = {
         fixtureId,
         sessionId: String(session.id ?? ""),
-        tournamentId: sessionTournamentId
-      }
-    })
-  );
+        tournamentId: String(session.tournamentId ?? ""),
+        homeScore: Number(session.homeScore),
+        awayScore: Number(session.awayScore)
+    };
 
-  window.dispatchEvent(
-    new CustomEvent("matchcraft:result-updated", {
-      detail: {
-        fixtureId,
-        sessionId: String(session.id ?? ""),
-        homeScore,
-        awayScore,
-        tournamentId: sessionTournamentId
-      }
-    })
-  );
+    window.dispatchEvent(
+        new CustomEvent("matchcraft:fixtures-updated", { detail })
+    );
 
-  return true;
+    window.dispatchEvent(
+        new CustomEvent("matchcraft:result-updated", {
+            detail: {
+                ...detail,
+                penaltyShootout: Boolean(
+                    Number(session.homeScore) === Number(session.awayScore) &&
+                    typeof mcGetPenaltyState === "function" &&
+                    mcGetPenaltyState(session).winner
+                )
+            }
+        })
+    );
+
+    return true;
 }
 
     /* -------------------- Render: Live Session -------------------- */
@@ -3544,6 +3680,8 @@ function getDismissedPlayerIds(session) {
         renderFullTimeResult(session);
         renderSubstitutionOptions();
         renderEventPlayerOptions();
+        mcRenderPenaltyPlayerOptions();
+        mcRenderPenalty(session);
 
         $("#mcEventForm").querySelectorAll("input, select, button")
             .forEach(control => {
@@ -3589,6 +3727,402 @@ function getDismissedPlayerIds(session) {
             $("#mcSetupPanel").hidden = true;
         }
     }
+
+    /* =========================================
+   MATCHCRAFT - PENALTY SHOOTOUT
+========================================= */
+
+const mcPenaltyState = new Map();
+
+function mcGetPenaltyState(session) {
+    const key = String(session.fixtureId);
+
+    if (!mcPenaltyState.has(key)) {
+        let savedState = null;
+
+        try {
+            savedState = JSON.parse(
+                localStorage.getItem(`matchcraft_penalty_${key}`) || "null"
+            );
+        } catch (error) {
+            console.error("Could not load penalty state:", error);
+        }
+
+        mcPenaltyState.set(key, savedState || {
+            started: false,
+            initialShots: 5,
+            home: [],
+            away: [],
+            history: [],
+            winner: null
+        });
+    }
+
+    return mcPenaltyState.get(key);
+}
+
+function mcRenderPenaltyPlayerOptions() {
+    const session = getSessionByFixture(activeFixtureId);
+    const teamSelect = $("#mcPenaltyTeam");
+    const playerSelect = $("#mcPenaltyPlayer");
+
+    if (!teamSelect || !playerSelect) return;
+
+    if (!session || session.status !== "full-time") {
+        playerSelect.innerHTML =
+            '<option value="">Full Time match required</option>';
+        return;
+    }
+
+    const teamSide = teamSelect.value || "home";
+
+    if (!["home", "away"].includes(teamSide)) {
+        playerSelect.innerHTML =
+            '<option value="">Select a valid team</option>';
+        return;
+    }
+
+    const activeIds = (
+        session.activePlayers?.[teamSide] || []
+    ).map(String);
+
+    const activePlayers = activeIds
+        .map(id => findPlayer(id))
+        .filter(Boolean);
+
+    playerSelect.innerHTML = `
+        <option value="">Select penalty shooter</option>
+        ${activePlayers.map(player => `
+            <option value="${escapeHTML(String(playerIdOf(player)))}">
+                #${escapeHTML(String(jerseyOf(player) || "—"))}
+                ${escapeHTML(playerNameOf(player))}
+            </option>
+        `).join("")}
+    `;
+}
+
+$("#mcPenaltyTeam")?.addEventListener("change", () => {
+    mcRenderPenaltyPlayerOptions();
+});
+
+function mcRenderPenalty(session) {
+    const panel = document.querySelector("#mcPenaltyPanel");
+    if (!panel || !session) return;
+
+    const tied =
+        Number(session.homeScore) === Number(session.awayScore);
+
+    const eligible =
+        session.status === "full-time" && tied;
+
+        console.log("Penalty Debug:", {
+    status: session.status,
+    homeScore: session.homeScore,
+    awayScore: session.awayScore,
+    tied: tied,
+    eligible: eligible,
+    panelFound: !!panel
+});
+
+    panel.hidden = !eligible;
+
+   console.log("Penalty Panel Visibility:", {
+    hidden: panel.hidden,
+    display: getComputedStyle(panel).display,
+    visibility: getComputedStyle(panel).visibility,
+    height: panel.getBoundingClientRect().height,
+    rect: panel.getBoundingClientRect().toJSON(),
+    parent: panel.parentElement?.id
+});
+    if (!eligible) return;
+
+    const state = mcGetPenaltyState(session);
+
+    const homeGoals = state.home.filter(shot => shot.goal).length;
+    const awayGoals = state.away.filter(shot => shot.goal).length;
+
+    document.querySelector("#mcPenaltyHomeLabel").textContent =
+        session.homeTeamName || "Home Team";
+
+    document.querySelector("#mcPenaltyAwayLabel").textContent =
+        session.awayTeamName || "Away Team";
+
+        const selectedTeamName = document.querySelector(
+    "#mcPenaltySelectedTeamName"
+);
+
+const selectedTeam = document.querySelector("#mcPenaltyTeam")?.value;
+
+if (selectedTeamName) {
+    selectedTeamName.textContent =
+        selectedTeam === "away"
+            ? (session.awayTeamName || "Away Team")
+            : (session.homeTeamName || "Home Team");
+}
+
+    document.querySelector("#mcPenaltyHomeScore").textContent =
+        String(homeGoals);
+
+    document.querySelector("#mcPenaltyAwayScore").textContent =
+        String(awayGoals);
+
+    const status = document.querySelector("#mcPenaltyStatus");
+
+    if (state.winner) {
+        const winnerName = state.winner === "home"
+            ? session.homeTeamName
+            : session.awayTeamName;
+
+        status.textContent =
+            `Penalty Shootout Winner: ${winnerName} (${homeGoals}–${awayGoals})`;
+    } else if (!state.started) {
+        status.textContent =
+            "Choose the initial shots per team, then start the shootout.";
+    } else {
+        const homeTaken = state.home.length;
+        const awayTaken = state.away.length;
+
+        if (homeTaken < awayTaken) {
+            status.textContent =
+                `${session.homeTeamName} must take the next penalty.`;
+        } else if (awayTaken < homeTaken) {
+            status.textContent =
+                `${session.awayTeamName} must take the next penalty.`;
+        } else if (
+            homeTaken >= state.initialShots &&
+            homeGoals === awayGoals
+        ) {
+            status.textContent =
+                "Scores are tied. Continue with sudden-death penalties.";
+        } else {
+            status.textContent =
+                "Select the shooting team and player, then record Goal or Miss.";
+        }
+    }
+
+    const history = document.querySelector("#mcPenaltyHistory");
+    history.replaceChildren();
+
+    state.history.forEach((shot, index) => {
+        const item = document.createElement("li");
+        item.textContent =
+            `${index + 1}. ${shot.teamName} — ${shot.playerName}: ` +
+            `${shot.goal ? "Goal" : "Miss"} ` +
+            `(Shot ${shot.shotNumber || index + 1}, Round ${shot.round})`;
+
+        history.appendChild(item);
+    });
+
+    const finished = Boolean(state.winner);
+
+    document.querySelector("#mcPenaltyStart").disabled =
+        state.started || finished;
+
+    document.querySelector("#mcPenaltyGoal").disabled =
+        !state.started || finished;
+
+    document.querySelector("#mcPenaltyMiss").disabled =
+        !state.started || finished;
+
+    document.querySelector("#mcPenaltyShotCount").disabled =
+        state.started || finished;
+
+    document.querySelector("#mcPenaltyTeam").disabled =
+        !state.started || finished;
+
+    document.querySelector("#mcPenaltyPlayer").disabled =
+        !state.started || finished;
+}
+
+function mcStartPenaltyShootout() {
+    const session = getSessionByFixture(activeFixtureId);
+
+    if (!session) {
+        alert("Could not find the active match. Please reopen the match.");
+        return;
+    }
+
+    if (session.status !== "full-time") {
+        alert("Penalty Shootout can only start after Full Time.");
+        return;
+    }
+
+    if (Number(session.homeScore) !== Number(session.awayScore)) {
+        alert("Penalty Shootout is available only when the match score is tied.");
+        return;
+    }
+
+    const state = mcGetPenaltyState(session);
+
+    if (state.started) {
+        mcRenderPenalty(session);
+        return;
+    }
+
+    const shotCountInput = document.querySelector("#mcPenaltyShotCount");
+
+    if (!shotCountInput) {
+        alert("Penalty Shootout shot-count input was not found.");
+        return;
+    }
+
+    const shots = Number(shotCountInput.value);
+
+    if (!Number.isInteger(shots) || shots < 1 || shots > 20) {
+        alert("Enter a number of shots between 1 and 20.");
+        return;
+    }
+
+    state.initialShots = shots;
+    state.started = true;
+
+    localStorage.setItem(
+        `matchcraft_penalty_${session.fixtureId}`,
+        JSON.stringify(state)
+    );
+
+    mcRenderPenaltyPlayerOptions();
+    mcRenderPenalty(session);
+
+    console.log("Penalty Shootout started:", {
+        fixtureId: session.fixtureId,
+        initialShots: state.initialShots
+    });
+}
+
+function mcRecordPenalty(goal) {
+    const session = getSessionByFixture(activeFixtureId);
+    if (!session || session.status !== "full-time") return;
+
+    const state = mcGetPenaltyState(session);
+    if (!state.started || state.winner) return;
+
+    const team = $("#mcPenaltyTeam")?.value;
+    const playerSelect = $("#mcPenaltyPlayer");
+    const playerId = playerSelect?.value;
+    const playerName =
+        playerSelect?.selectedOptions?.[0]?.textContent?.trim() || "";
+
+    if (!["home", "away"].includes(team)) {
+        alert("Select a valid shooting team.");
+        return;
+    }
+
+    if (!playerId || !playerName) {
+        alert("Select the penalty taker first.");
+        return;
+    }
+
+    const home = state.home;
+    const away = state.away;
+
+    // A team cannot take another shot until the other team
+    // has taken the same number of shots.
+    if (
+        (team === "home" && home.length > away.length) ||
+        (team === "away" && away.length > home.length)
+    ) {
+        alert("The other team must take its penalty first.");
+        return;
+    }
+
+    if (home.length === away.length && state.history.length > 0) {
+    const lastShot = state.history[state.history.length - 1];
+
+    if (lastShot.team === team) {
+        alert("The other team must take its penalty first.");
+        return;
+    }
+}
+
+    const teamShots = team === "home" ? home : away;
+    const otherShots = team === "home" ? away : home;
+
+    const shotNumber = teamShots.length + 1;
+    const otherShotNumber = otherShots.length + 1;
+
+    const shot = {
+        team,
+        teamName: team === "home"
+            ? session.homeTeamName
+            : session.awayTeamName,
+        playerId: String(playerId),
+        playerName,
+        goal: Boolean(goal),
+        round: Math.ceil(shotNumber / state.initialShots),
+        shotNumber,
+        time: new Date().toISOString()
+    };
+
+    teamShots.push(shot);
+    state.history.push(shot);
+
+    const homeGoals = home.filter(item => item.goal).length;
+    const awayGoals = away.filter(item => item.goal).length;
+
+    const homeTaken = home.length;
+    const awayTaken = away.length;
+    const initial = state.initialShots;
+
+    // During the initial shootout, check whether the trailing
+    // team can still catch up with its remaining kicks.
+    if (homeTaken < initial || awayTaken < initial) {
+        const homeRemaining = Math.max(0, initial - homeTaken);
+        const awayRemaining = Math.max(0, initial - awayTaken);
+
+        if (homeGoals > awayGoals + awayRemaining) {
+            state.winner = "home";
+        } else if (awayGoals > homeGoals + homeRemaining) {
+            state.winner = "away";
+        }
+    }
+
+    // After both teams have taken the same number of shots,
+    // a winner can be declared if their scores differ.
+    if (
+        !state.winner &&
+        homeTaken === awayTaken &&
+        homeTaken >= initial &&
+        homeGoals !== awayGoals
+    ) {
+        state.winner = homeGoals > awayGoals ? "home" : "away";
+    }
+
+    // After the initial kicks, use sudden death:
+    // decide only after both teams have taken the same number
+    // of kicks in the tied sequence.
+    if (
+        !state.winner &&
+        homeTaken === awayTaken &&
+        homeTaken > initial &&
+        homeGoals !== awayGoals
+    ) {
+        state.winner = homeGoals > awayGoals ? "home" : "away";
+    }
+
+    try {
+        localStorage.setItem(
+            `matchcraft_penalty_${session.fixtureId}`,
+            JSON.stringify(state)
+        );
+    } catch (error) {
+        console.error("Could not save penalty shootout:", error);
+        alert("Penalty data could not be saved on this device.");
+    }
+
+    mcRenderPenalty(session);
+
+    // Sync the completed penalty result with the fixture
+    // so the knockout bracket can read the winner.
+    if (
+        state.winner &&
+        typeof syncFixtureResult === "function"
+    ) {
+        syncFixtureResult(session);
+    }
+}
+
+
 
     function updatePhaseButtons(session) {
         const startButton = $("#mcStartFirstHalf");
@@ -4046,12 +4580,43 @@ if (liveCard) {
             if (target.id === "mcSubTeam") {
                 renderSubstitutionOptions();
             }
+
+            if (target.id === "mcPenaltyTeam") {
+    const session = getSessionByFixture(activeFixtureId);
+    const nameElement = $("#mcPenaltySelectedTeamName");
+
+    if (session && nameElement) {
+        nameElement.textContent =
+            target.value === "away"
+                ? (session.awayTeamName || "Away Team")
+                : (session.homeTeamName || "Home Team");
+    }
+
+    mcRenderPenaltyPlayerOptions();
+}
+
         });
 
         root.addEventListener("click", event => {
             const target = event.target.closest("button");
 
             if (!target) return;
+
+            // Penalty Shootout controls
+if (target.id === "mcPenaltyStart") {
+    mcStartPenaltyShootout();
+    return;
+}
+
+if (target.id === "mcPenaltyGoal") {
+    mcRecordPenalty(true);
+    return;
+}
+
+if (target.id === "mcPenaltyMiss") {
+    mcRecordPenalty(false);
+    return;
+}
 
             if (target.id === "mcRefreshFixtures") {
                 renderAll();
