@@ -707,6 +707,15 @@ pageLinks.forEach(function (link) {
         if (pageName === "tournaments") {
             renderTournaments();
         }
+
+        // Statistics পেজ নির্বাচিত হলে সেটি রিফ্রেশ করুন
+        if (
+            pageName === "statistics" &&
+            window.MatchCraftStatistics &&
+            typeof window.MatchCraftStatistics.refresh === "function"
+        ) {
+            window.MatchCraftStatistics.refresh();
+        }
     });
 });
 
@@ -1148,6 +1157,70 @@ if (currentTournamentId !== null) {
             }
         );
     }
+
+
+    /* ---------- Default Page: Dashboard ---------- */
+
+function showDefaultDashboard() {
+    const pageIds = [
+        "dashboard",
+        "tournaments",
+        "teams",
+        "players",
+        "matches",
+        "fixtures",
+        "standings",
+        "statistics",
+        "help"
+    ];
+
+    pageIds.forEach(function (id) {
+        const page = document.getElementById(id);
+        if (!page) return;
+
+        const isDashboard = id === "dashboard";
+
+        page.hidden = !isDashboard;
+
+        if (isDashboard) {
+            page.style.removeProperty("display");
+            page.classList.remove("hidden");
+        } else {
+            page.style.setProperty("display", "none", "important");
+            page.classList.add("hidden");
+        }
+    });
+
+    updateDashboardStats();
+
+    const dashboardLink = document.querySelector(
+        '.sidebar_menu .menu a[data-page="dashboard"]'
+    );
+
+    document.querySelectorAll(
+        ".sidebar_menu .menu a[data-page]"
+    ).forEach(function (link) {
+        link.classList.toggle("active", link === dashboardLink);
+        if (link === dashboardLink) {
+            link.setAttribute("aria-current", "page");
+        } else {
+            link.removeAttribute("aria-current");
+        }
+    });
+
+    if (mobilePageTitle && dashboardLink) {
+        const label = dashboardLink.querySelector("span");
+        mobilePageTitle.textContent = label
+            ? label.textContent.trim()
+            : dashboardLink.textContent.trim();
+    }
+
+    if (menuCheckbox) {
+        menuCheckbox.checked = false;
+    }
+}
+
+window.addEventListener("DOMContentLoaded", showDefaultDashboard);
 
 
     /* ---------- Initialize Tournament Management ---------- */

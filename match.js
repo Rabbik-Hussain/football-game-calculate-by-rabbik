@@ -2332,6 +2332,7 @@ function displayMinute(session) {
     session.phaseStartedAt = null;
     session.phaseExpiryHandled = true;
     session.finishedAt = new Date().toISOString();
+session.completedAt = session.finishedAt;
     session.resultSaved = true;
 
     saveSession(session);
@@ -2741,153 +2742,221 @@ function handlePhaseExpiry(session) {
     `;
 }
 
-    function saveEvent(event) {
-        event.preventDefault();
+function getDismissedPlayerIds(session) {
+    const dismissed = new Set();
+    const yellowCards = new Map();
 
-        const session = getActiveSession();
+    (session?.events || []).forEach(eventItem => {
+        const playerId = String(eventItem.playerId || "");
 
-        if (!session) {
-            showNotice("Start a match before recording events.", "warning");
-            return;
+        if (!playerId) return;
+
+        if (eventItem.type === "red-card") {
+            dismissed.add(playerId);
         }
 
-        if (!["first-half", "second-half", "added-time"].includes(session.status)) {
-            showNotice("Events can only be added while a half is in progress.", "warning");
-            return;
-        }
+        if (eventItem.type === "yellow-card") {
+            const count = (yellowCards.get(playerId) || 0) + 1;
+            yellowCards.set(playerId, count);
 
-        const side = $("#mcEventTeam").value;
-        const playerId = $("#mcEventPlayer").value;
-        const assistId = $("#mcAssistPlayer").value;
-        const minute = Number($("#mcEventMinute").value);
-        const notes = $("#mcEventNotes").value.trim();
-
-        if (!playerId) {
-            showNotice("Select a player for this event.", "warning");
-            return;
-        }
-
-        if (!Number.isInteger(minute) || minute < 0 || minute > 300) {
-            showNotice("Enter a valid match minute.", "error");
-            return;
-        }
-
-        const teamId = side === "home"
-            ? session.homeTeamId
-            : session.awayTeamId;
-
-       const player = findPlayer(playerId);
-
-const activeIds = (
-    session.activePlayers?.[side] || []
-).map(String);
-
-if (!player || playerTeamIdOf(player) !== String(teamId)) {
-    showNotice(
-        "The selected player does not belong to this team.",
-        "error"
-    );
-    return;
-}
-
-if (!activeIds.includes(String(playerId))) {
-    showNotice(
-        "এই খেলোয়াড় বর্তমানে মাঠে নেই। শুধু মাঠে থাকা খেলোয়াড় নির্বাচন করুন।",
-        "warning"
-    );
-    renderEventPlayerOptions();
-    return;
-}
-
-        if (selectedEventType === "goal") {
-            if (session.events.some(eventItem =>
-                eventItem.type === "goal" &&
-                eventItem.playerId === String(playerId) &&
-                eventItem.minute === minute &&
-                eventItem.teamSide === side &&
-                eventItem.notes === notes
-            )) {
-                showNotice(
-                    "A matching goal event already exists. Check the event list before saving again.",
-                    "warning"
-                );
-                return;
+            if (count >= 2) {
+                dismissed.add(playerId);
             }
         }
+    });
 
-        let assister = null;
-
-        if (selectedEventType === "goal" && assistId) {
-            if (assistId === playerId) {
-                showNotice("A player cannot assist their own goal.", "warning");
-                return;
-            }
-
-            assister = findPlayer(assistId);
-
-if (!assister ||
-    playerTeamIdOf(assister) !== String(teamId)) {
-    showNotice(
-        "The selected assister does not belong to this team.",
-        "error"
-    );
-    return;
+    return dismissed;
 }
 
-if (!activeIds.includes(String(assistId))) {
-    showNotice(
-        "Assist-এর খেলোয়াড় বর্তমানে মাঠে নেই। মাঠে থাকা খেলোয়াড় নির্বাচন করুন।",
-        "warning"
-    );
-    renderEventPlayerOptions();
-    return;
-}
-        }
+   function saveEvent(event) {
+    event.preventDefault();
 
-        const eventItem = {
-            id: makeId("event"),
-            type: selectedEventType,
-            teamSide: side,
-            teamId,
-            teamName: side === "home"
-                ? session.homeTeamName
-                : session.awayTeamName,
-            playerId: String(playerId),
-            playerName: playerNameOf(player),
-            minute,
-            notes,
-            createdAt: new Date().toISOString()
-        };
+    const session = getActiveSession();
 
-        if (assister) {
-            eventItem.assistPlayerId = playerIdOf(assister);
-            eventItem.assistPlayerName = playerNameOf(assister);
-        }
+    if (!session) {
+        showNotice("Start a match before recording events.", "warning");
+        return;
+    }
 
-        session.events.push(eventItem);
+    if (!["first-half", "second-half", "added-time"].includes(session.status)) {
+        showNotice("Events can only be added while a half is in progress.", "warning");
+        return;
+    }
 
-        if (selectedEventType === "goal") {
-            if (side === "home") {
-                session.homeScore += 1;
-            } else {
-                session.awayScore += 1;
-            }
-        }
+    if (!Array.isArray(session.events)) {
+        session.events = [];
+    }
 
-        saveSession(session);
-        reconcilePlayerStats();
+    if (!session.activePlayers) {
+        session.activePlayers = { home: [], away: [] };
+    }
 
-        $("#mcEventNotes").value = "";
-        $("#mcAssistPlayer").value = "";
+    const side = $("#mcEventTeam").value;
+    const playerId = String($("#mcEventPlayer").value || "");
+    const assistId = String($("#mcAssistPlayer").value || "");
+    const minute = Number($("#mcEventMinute").value);
+    const notes = $("#mcEventNotes").value.trim();
 
-        renderActiveSession(session);
-        renderSummary();
+    if (!["home", "away"].includes(side)) {
+        showNotice("Select a valid team.", "warning");
+        return;
+    }
 
+    if (!playerId) {
+        showNotice("Select a player for this event.", "warning");
+        return;
+    }
+
+    if (!Number.isInteger(minute) || minute < 0 || minute > 300) {
+        showNotice("Enter a valid match minute.", "error");
+        return;
+    }
+
+    const teamId = side === "home"
+        ? session.homeTeamId
+        : session.awayTeamId;
+
+    const player = findPlayer(playerId);
+    const activeIds = (session.activePlayers[side] || []).map(String);
+    const dismissedIds = getDismissedPlayerIds(session);
+
+    if (!player || playerTeamIdOf(player) !== String(teamId)) {
         showNotice(
-            `${EVENT_LABELS[selectedEventType]} event saved.`,
-            "success"
+            "The selected player does not belong to this team.",
+            "error"
+        );
+        return;
+    }
+
+    if (dismissedIds.has(playerId)) {
+        showNotice(
+            "এই খেলোয়াড় Red Card অথবা দ্বিতীয় Yellow Card পেয়ে এই ম্যাচ থেকে বাদ পড়েছে।",
+            "warning"
+        );
+        return;
+    }
+
+    if (!activeIds.includes(playerId)) {
+        showNotice(
+            "এই খেলোয়াড় বর্তমানে মাঠে নেই। শুধু মাঠে থাকা খেলোয়াড় নির্বাচন করুন।",
+            "warning"
+        );
+        renderEventPlayerOptions();
+        return;
+    }
+
+    let assister = null;
+
+    if (selectedEventType === "goal" && assistId) {
+        if (assistId === playerId) {
+            showNotice("A player cannot assist their own goal.", "warning");
+            return;
+        }
+
+        assister = findPlayer(assistId);
+
+        if (
+            !assister ||
+            playerTeamIdOf(assister) !== String(teamId)
+        ) {
+            showNotice(
+                "The selected assister does not belong to this team.",
+                "error"
+            );
+            return;
+        }
+
+        if (dismissedIds.has(assistId)) {
+            showNotice(
+                "বাদ পড়া খেলোয়াড়কে অ্যাসিস্টের জন্য নির্বাচন করা যাবে না।",
+                "warning"
+            );
+            return;
+        }
+
+        if (!activeIds.includes(assistId)) {
+            showNotice(
+                "Assist-এর খেলোয়াড় বর্তমানে মাঠে নেই। মাঠে থাকা খেলোয়াড় নির্বাচন করুন।",
+                "warning"
+            );
+            renderEventPlayerOptions();
+            return;
+        }
+    }
+
+    const eventItem = {
+        id: makeId("event"),
+        type: selectedEventType,
+        teamSide: side,
+        teamId,
+        teamName: side === "home"
+            ? session.homeTeamName
+            : session.awayTeamName,
+        playerId,
+        playerName: playerNameOf(player),
+        minute,
+        notes,
+        createdAt: new Date().toISOString()
+    };
+
+    if (assister) {
+        eventItem.assistPlayerId = playerIdOf(assister);
+        eventItem.assistPlayerName = playerNameOf(assister);
+    }
+
+    session.events.push(eventItem);
+
+    if (selectedEventType === "goal") {
+        if (side === "home") {
+            session.homeScore = Number(session.homeScore || 0) + 1;
+        } else {
+            session.awayScore = Number(session.awayScore || 0) + 1;
+        }
+    }
+
+    const yellowCardCount = session.events.filter(item =>
+        item.type === "yellow-card" &&
+        String(item.playerId || "") === playerId
+    ).length;
+
+    const isDismissed =
+        selectedEventType === "red-card" ||
+        (
+            selectedEventType === "yellow-card" &&
+            yellowCardCount >= 2
+        );
+
+    if (isDismissed) {
+        session.activePlayers[side] = activeIds.filter(
+            id => id !== playerId
         );
     }
+
+    saveSession(session);
+    reconcilePlayerStats();
+
+    $("#mcEventNotes").value = "";
+    $("#mcAssistPlayer").value = "";
+
+    renderActiveSession(session);
+    renderEventPlayerOptions();
+    renderSummary();
+
+    if (isDismissed) {
+        showNotice(
+            selectedEventType === "red-card"
+                ? `${playerNameOf(player)} Red Card পেয়েছে এবং এই ম্যাচ থেকে বাদ পড়েছে।`
+                : `${playerNameOf(player)} দ্বিতীয় Yellow Card পেয়েছে এবং এই ম্যাচ থেকে বাদ পড়েছে।`,
+            "warning"
+        );
+        return;
+    }
+
+    showNotice(
+        `${EVENT_LABELS[selectedEventType]} event saved.`,
+        "success"
+    );
+}
 
     function deleteEvent(eventId) {
         const session = getActiveSession();
@@ -2988,112 +3057,174 @@ if (!activeIds.includes(String(assistId))) {
     }
 
     function saveSubstitution(event) {
-        event.preventDefault();
+    event.preventDefault();
 
-        const session = getActiveSession();
+    const session = getActiveSession();
 
-        if (!session) {
-            showNotice("Start a match before recording substitutions.", "warning");
-            return;
-        }
-
-        if (!["first-half", "second-half", "added-time"].includes(session.status)) {
-            showNotice("Substitutions can only be recorded while the match is in progress.", "warning");
-            return;
-        }
-
-        const side = $("#mcSubTeam").value;
-        const outgoingId = $("#mcSubOut").value;
-        const incomingId = $("#mcSubIn").value;
-        const minute = Number($("#mcSubMinute").value);
-
-        if (!outgoingId || !incomingId) {
-            showNotice("Select both the outgoing player and the substitute.", "warning");
-            return;
-        }
-
-        if (outgoingId === incomingId) {
-            showNotice("The incoming and outgoing players must be different.", "error");
-            return;
-        }
-
-        if (!Number.isInteger(minute) || minute < 0 || minute > 300) {
-            showNotice("Enter a valid substitution minute.", "error");
-            return;
-        }
-
-        const teamId = side === "home"
-            ? session.homeTeamId
-            : session.awayTeamId;
-
-        const outgoing = findPlayer(outgoingId);
-        const incoming = findPlayer(incomingId);
-
-        if (!outgoing || !incoming ||
-            playerTeamIdOf(outgoing) !== String(teamId) ||
-            playerTeamIdOf(incoming) !== String(teamId)) {
-            showNotice("Both players must belong to the same selected team.", "error");
-            return;
-        }
-
-        const active = session.activePlayers[side];
-
-        if (!active.includes(String(outgoingId))) {
-            showNotice("The outgoing player is not currently on the pitch.", "error");
-            return;
-        }
-
-        if (active.includes(String(incomingId))) {
-            showNotice("The incoming player is already on the pitch.", "error");
-            return;
-        }
-
-        const previouslyEntered = session.substitutions.some(sub =>
-            sub.teamSide === side &&
-            sub.inPlayerId === String(incomingId)
-        );
-
-        if (previouslyEntered) {
-            showNotice("This player has already entered as a substitute.", "error");
-            return;
-        }
-
-        session.activePlayers[side] = active
-            .filter(id => id !== String(outgoingId));
-
-        session.activePlayers[side].push(String(incomingId));
-
-        const substitution = {
-            id: makeId("sub"),
-            type: "substitution",
-            teamSide: side,
-            teamId,
-            teamName: side === "home"
-                ? session.homeTeamName
-                : session.awayTeamName,
-            outPlayerId: String(outgoingId),
-            outPlayerName: playerNameOf(outgoing),
-            inPlayerId: String(incomingId),
-            inPlayerName: playerNameOf(incoming),
-            minute,
-            createdAt: new Date().toISOString()
-        };
-
-        session.substitutions.push(substitution);
-        session.events.push({
-            ...substitution,
-            playerId: String(incomingId),
-            playerName: playerNameOf(incoming)
-        });
-
-        saveSession(session);
-
-        renderActiveSession(session);
-        showNotice(
-            `${playerNameOf(outgoing)} replaced by ${playerNameOf(incoming)}.`,
-            "success"
-        );
+    if (!session) {
+        showNotice("Start a match before recording substitutions.", "warning");
+        return;
     }
+
+    if (!["first-half", "second-half", "added-time"].includes(session.status)) {
+        showNotice(
+            "Substitutions can only be recorded while the match is in progress.",
+            "warning"
+        );
+        return;
+    }
+
+    if (!session.activePlayers) {
+        session.activePlayers = { home: [], away: [] };
+    }
+
+    if (!Array.isArray(session.events)) {
+        session.events = [];
+    }
+
+    if (!Array.isArray(session.substitutions)) {
+        session.substitutions = [];
+    }
+
+    const side = $("#mcSubTeam").value;
+    const outgoingId = String($("#mcSubOut").value || "");
+    const incomingId = String($("#mcSubIn").value || "");
+    const minute = Number($("#mcSubMinute").value);
+
+    if (!["home", "away"].includes(side)) {
+        showNotice("Select a valid team.", "warning");
+        return;
+    }
+
+    if (!outgoingId || !incomingId) {
+        showNotice(
+            "Select both the outgoing player and the substitute.",
+            "warning"
+        );
+        return;
+    }
+
+    if (outgoingId === incomingId) {
+        showNotice(
+            "The incoming and outgoing players must be different.",
+            "error"
+        );
+        return;
+    }
+
+    if (!Number.isInteger(minute) || minute < 0 || minute > 300) {
+        showNotice("Enter a valid substitution minute.", "error");
+        return;
+    }
+
+    const teamId = side === "home"
+        ? session.homeTeamId
+        : session.awayTeamId;
+
+    const outgoing = findPlayer(outgoingId);
+    const incoming = findPlayer(incomingId);
+
+    if (
+        !outgoing ||
+        !incoming ||
+        playerTeamIdOf(outgoing) !== String(teamId) ||
+        playerTeamIdOf(incoming) !== String(teamId)
+    ) {
+        showNotice(
+            "Both players must belong to the same selected team.",
+            "error"
+        );
+        return;
+    }
+
+    const dismissedIds = getDismissedPlayerIds(session);
+
+    if (dismissedIds.has(outgoingId)) {
+        showNotice(
+            "Red Card অথবা দ্বিতীয় Yellow Card পাওয়া খেলোয়াড়কে বদলি করা যাবে না।",
+            "error"
+        );
+        return;
+    }
+
+    if (dismissedIds.has(incomingId)) {
+        showNotice(
+            "Red Card অথবা দ্বিতীয় Yellow Card পাওয়া খেলোয়াড়কে আবার মাঠে ঢোকানো যাবে না।",
+            "error"
+        );
+        return;
+    }
+
+    const active = (session.activePlayers[side] || []).map(String);
+
+    if (!active.includes(outgoingId)) {
+        showNotice(
+            "The outgoing player is not currently on the pitch.",
+            "error"
+        );
+        return;
+    }
+
+    if (active.includes(incomingId)) {
+        showNotice(
+            "The incoming player is already on the pitch.",
+            "error"
+        );
+        return;
+    }
+
+    const previouslyEntered = session.substitutions.some(sub =>
+        sub.teamSide === side &&
+        String(sub.inPlayerId) === incomingId
+    );
+
+    if (previouslyEntered) {
+        showNotice(
+            "This player has already entered as a substitute.",
+            "error"
+        );
+        return;
+    }
+
+    session.activePlayers[side] = active
+        .filter(id => id !== outgoingId);
+
+    session.activePlayers[side].push(incomingId);
+
+    const substitution = {
+        id: makeId("sub"),
+        type: "substitution",
+        teamSide: side,
+        teamId,
+        teamName: side === "home"
+            ? session.homeTeamName
+            : session.awayTeamName,
+        outPlayerId: outgoingId,
+        outPlayerName: playerNameOf(outgoing),
+        inPlayerId: incomingId,
+        inPlayerName: playerNameOf(incoming),
+        minute,
+        createdAt: new Date().toISOString()
+    };
+
+    session.substitutions.push(substitution);
+
+    session.events.push({
+        ...substitution,
+        playerId: incomingId,
+        playerName: playerNameOf(incoming)
+    });
+
+    saveSession(session);
+
+    renderActiveSession(session);
+    renderEventPlayerOptions();
+
+    showNotice(
+        `${playerNameOf(outgoing)} replaced by ${playerNameOf(incoming)}.`,
+        "success"
+    );
+}
 
     /* -------------------- Event-Based Player Statistics -------------------- */
 
@@ -3227,64 +3358,107 @@ if (!activeIds.includes(String(assistId))) {
     /* -------------------- Fixture Result Synchronization -------------------- */
 
     function syncFixtureResult(session) {
-        const fixtures = getFixtures();
+  if (!session || !session.fixtureId) {
+    console.warn(
+      "MatchCraft: Cannot sync result without a fixture ID."
+    );
+    return false;
+  }
 
-        const index = fixtures.findIndex(fixture =>
-            fixtureIdOf(fixture) === String(session.fixtureId)
-        );
+  const fixtures = getFixtures();
+  const fixtureId = String(session.fixtureId);
 
-        if (index < 0) {
-            console.warn(
-                "MATCHCRAFT: The matching fixture was not found. " +
-                "The Full-Time result is preserved in Match Center storage."
-            );
-            return false;
-        }
+  const fixture = fixtures.find(item =>
+    fixtureIdOf(item) === fixtureId
+  );
 
-        const fixture = fixtures[index];
+  if (!fixture) {
+    console.warn(
+      "MatchCraft: Matching fixture was not found:",
+      fixtureId
+    );
+    return false;
+  }
 
-        /*
-          Preserve the original fixture object and its existing fields.
-          The final fixtures.js integration should standardize these
-          field names and any tournament standings notifications.
-        */
+  const sessionTournamentId = String(
+    session.tournamentId ?? ""
+  );
 
-        fixture.homeScore = Number(session.homeScore);
-        fixture.awayScore = Number(session.awayScore);
-        fixture.status = "completed";
-        fixture.matchStatus = "Full-Time";
-        fixture.resultSaved = true;
-        fixture.resultSource = "matchcraft_match_center";
-        fixture.resultSessionId = session.id;
-        fixture.completedAt = session.finishedAt ||
-            new Date().toISOString();
+  const existingTournamentId = fixtureTournamentId(fixture);
 
-        try {
-            writeJSON(KEYS.fixtures, fixtures);
+  if (
+    sessionTournamentId &&
+    existingTournamentId &&
+    sessionTournamentId !== existingTournamentId
+  ) {
+    console.error(
+      "MatchCraft: Tournament mismatch. Result was not synced."
+    );
+    return false;
+  }
 
-            window.dispatchEvent(new CustomEvent(
-                "matchcraft:result-updated",
-                {
-                    detail: {
-                        fixtureId: session.fixtureId,
-                        sessionId: session.id,
-                        homeScore: session.homeScore,
-                        awayScore: session.awayScore,
-                        tournamentId: session.tournamentId
-                    }
-                }
-            ));
+  const homeScore = Number(session.homeScore);
+  const awayScore = Number(session.awayScore);
 
-            return true;
-        } catch (error) {
-            console.error("MATCHCRAFT: Could not sync fixture result.", error);
-            showNotice(
-                "Full-Time is saved in Match Center, but fixture synchronization failed.",
-                "error"
-            );
-            return false;
-        }
-    }
+  if (
+    !Number.isFinite(homeScore) ||
+    !Number.isFinite(awayScore) ||
+    homeScore < 0 ||
+    awayScore < 0
+  ) {
+    console.warn(
+      "MatchCraft: Invalid final score. Result was not synced."
+    );
+    return false;
+  }
+
+  const completedAt =
+    session.completedAt ||
+    session.finishedAt ||
+    new Date().toISOString();
+
+  fixture.homeScore = homeScore;
+  fixture.awayScore = awayScore;
+  fixture.score = `${homeScore} - ${awayScore}`;
+
+  fixture.status = "completed";
+  fixture.matchStatus = "Full-Time";
+  fixture.resultSaved = true;
+  fixture.resultSource = "matchcraft_match_center";
+  fixture.resultSessionId = session.id;
+  fixture.completedAt = completedAt;
+  fixture.updatedAt = new Date().toISOString();
+
+  // Keep the existing fixture storage keys synchronized.
+  writeJSON(KEYS.fixtures, fixtures);
+  writeJSON("matchcraft_matches_fixtures", fixtures);
+  writeJSON("matchcraft_scheduled_matches", fixtures);
+
+  window.dispatchEvent(
+    new CustomEvent("matchcraft:fixtures-updated", {
+      detail: {
+        fixtures,
+        fixtureId,
+        sessionId: String(session.id ?? ""),
+        tournamentId: sessionTournamentId
+      }
+    })
+  );
+
+  window.dispatchEvent(
+    new CustomEvent("matchcraft:result-updated", {
+      detail: {
+        fixtureId,
+        sessionId: String(session.id ?? ""),
+        homeScore,
+        awayScore,
+        tournamentId: sessionTournamentId
+      }
+    })
+  );
+
+  return true;
+}
 
     /* -------------------- Render: Live Session -------------------- */
 

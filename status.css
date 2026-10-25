@@ -16,7 +16,7 @@
     --st-blue: #64b5ff;
     --st-red: #ff6577;
 
-    display: none;
+    display: block;
     width: 100%;
     min-width: 0;
     padding: 26px;

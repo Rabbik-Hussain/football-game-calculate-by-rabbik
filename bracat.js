@@ -234,31 +234,79 @@
   }
 
   function getAllMatches() {
-    const result = [];
-    const seen = new Set();
+    const matchesByIdentity = new Map();
 
     [
-      STORAGE.matches,
-      STORAGE.fixtures,
-      STORAGE.fixturesAlt,
-      STORAGE.scheduled
+        STORAGE.matches,
+        STORAGE.fixtures,
+        STORAGE.fixturesAlt,
+        STORAGE.scheduled
     ].forEach(key => {
-      asArray(read(key)).forEach(match => {
-        const id = String(match?.id ?? match?.matchId ?? "");
+        asArray(read(key)).forEach(match => {
+            if (!match || typeof match !== "object") return;
 
-        const identity = id
-          ? `${key}:${id}`
-          : `${key}:${JSON.stringify(match)}`;
+            const fixtureId = String(
+                match.fixtureId ??
+                match.scheduledFixtureId ??
+                match.sourceFixtureId ??
+                match.fixture?.id ??
+                ""
+            ).trim();
 
-        if (!seen.has(identity)) {
-          seen.add(identity);
-          result.push({ ...match, __storageKey: key });
-        }
-      });
+            const recordId = String(
+                match.id ??
+                match.matchId ??
+                ""
+            ).trim();
+
+            const isFixtureStorage =
+                key === STORAGE.fixtures ||
+                key === STORAGE.fixturesAlt ||
+                key === STORAGE.scheduled;
+
+            // Match Center sessions link to a fixture through fixtureId.
+            // Fixture records identify themselves through their own id.
+            const linkedFixtureId = fixtureId ||
+                (isFixtureStorage ? recordId : "");
+
+            const tournamentId = String(
+                match.tournamentId ??
+                match.competitionId ??
+                match.tournament?.id ??
+                ""
+            ).trim();
+
+            const identity = linkedFixtureId
+                ? `fixture:${tournamentId}:${linkedFixtureId}`
+                : recordId
+                    ? `match:${tournamentId}:${recordId}`
+                    : `record:${key}:${JSON.stringify(match)}`;
+
+            const candidate = {
+                ...match,
+                __storageKey: key
+            };
+
+            const existing = matchesByIdentity.get(identity);
+
+            if (!existing) {
+                matchesByIdentity.set(identity, candidate);
+                return;
+            }
+
+            const candidateCompleted = isCompleted(candidate);
+            const existingCompleted = isCompleted(existing);
+
+            // Prefer the completed record when copies of the same
+            // fixture exist in more than one storage location.
+            if (candidateCompleted && !existingCompleted) {
+                matchesByIdentity.set(identity, candidate);
+            }
+        });
     });
 
-    return result;
-  }
+    return Array.from(matchesByIdentity.values());
+}
 
   function isForTournament(match, tournament) {
     const matchTournamentId = tournamentIdOfMatch(match);
@@ -410,6 +458,17 @@
     return teams.find(team => sameId(idOf(team), id)) || null;
   }
 
+  function teamLogoById(teamId) {
+  const team = findTeamById(getTeams(), teamId);
+
+  return String(
+    team?.profileImage ??
+    team?.logo ??
+    team?.image ??
+    ""
+  ).trim();
+}
+
   function roundName(teamCount) {
     if (teamCount === 2) return "Final";
     if (teamCount === 4) return "Semi-Final";
@@ -421,133 +480,496 @@
   }
 
   function buildBracket(qualifiedTeams) {
-    const teams = [...qualifiedTeams];
-    const size = Math.pow(2, Math.ceil(Math.log2(Math.max(2, teams.length))));
-    const slots = teams.concat(Array(Math.max(0, size - teams.length)).fill(null));
-    const rounds = [];
+  const teams = [...qualifiedTeams];
 
-    let currentSlots = slots;
-    let roundNumber = 1;
+  if (teams.length < 2) return [];
 
-    while (currentSlots.length >= 2) {
-      const matches = [];
+  const size = Math.pow(
+    2,
+    Math.ceil(Math.log2(teams.length))
+  );
 
-      for (let i = 0; i < currentSlots.length; i += 2) {
-        matches.push({
-          id: `r${roundNumber}-m${matches.length + 1}`,
-          homeId: currentSlots[i]?.id ?? null,
-          homeName: currentSlots[i]?.name ?? null,
-          awayId: currentSlots[i + 1]?.id ?? null,
-          awayName: currentSlots[i + 1]?.name ?? null,
-          homeScore: null,
-          awayScore: null,
-          winnerId: null,
-          winnerName: null
-        });
-      }
+  const byeCount = size - teams.length;
+  const firstRoundMatches = [];
+  let teamIndex = 0;
 
-      rounds.push({
-        id: `round-${roundNumber}`,
-        name: roundName(currentSlots.length),
-        matches
-      });
+  function makeMatch(roundNumber, matchNumber, home, away) {
+    return {
+      id: `r${roundNumber}-m${matchNumber}`,
+      homeId: home?.id ?? null,
+      homeName: home?.name ?? null,
+      awayId: away?.id ?? null,
+      awayName: away?.name ?? null,
 
-      currentSlots = Array(matches.length).fill(null);
-      roundNumber++;
-    }
+      // Bracket-এর নিজস্ব স্কোর
+      manualHomeScore: null,
+      manualAwayScore: null,
+      manualCompleted: false,
 
-    return rounds;
+      // Match Center-এর সঙ্গে সংযোগ থাকলে ব্যবহৃত হবে
+      fixtureId: null,
+      matchId: null,
+
+      homeScore: null,
+      awayScore: null,
+      winnerId: null,
+      winnerName: null
+    };
   }
 
+  for (let i = 0; i < byeCount; i++) {
+    firstRoundMatches.push(
+      makeMatch(
+        1,
+        firstRoundMatches.length + 1,
+        teams[teamIndex++],
+        null
+      )
+    );
+  }
+
+  while (teamIndex < teams.length) {
+    const home = teams[teamIndex++];
+    const away = teams[teamIndex++];
+
+    firstRoundMatches.push(
+      makeMatch(
+        1,
+        firstRoundMatches.length + 1,
+        home,
+        away
+      )
+    );
+  }
+
+  const rounds = [{
+    id: "round-1",
+    name: roundName(size),
+    matches: firstRoundMatches
+  }];
+
+  let previousMatchCount = firstRoundMatches.length;
+  let roundNumber = 2;
+
+  while (previousMatchCount > 1) {
+    const nextMatchCount = Math.ceil(previousMatchCount / 2);
+
+    const matches = Array.from(
+      { length: nextMatchCount },
+      (_, index) => makeMatch(
+        roundNumber,
+        index + 1,
+        null,
+        null
+      )
+    );
+
+    rounds.push({
+      id: `round-${roundNumber}`,
+      name: roundName(previousMatchCount),
+      matches
+    });
+
+    previousMatchCount = nextMatchCount;
+    roundNumber++;
+  }
+
+  return rounds;
+}
+
   function findBracketResult(bracketMatch, results) {
-    const homeName = String(bracketMatch.homeName ?? "").toLowerCase();
-    const awayName = String(bracketMatch.awayName ?? "").toLowerCase();
+    const homeName = String(
+        bracketMatch.homeName ?? ""
+    ).trim().toLowerCase();
+
+    const awayName = String(
+        bracketMatch.awayName ?? ""
+    ).trim().toLowerCase();
 
     if (!homeName || !awayName) return null;
 
-    return results.find(match => {
-      const matchHome = teamLabelOfMatch(match, "home").toLowerCase();
-      const matchAway = teamLabelOfMatch(match, "away").toLowerCase();
+    const bracketFixtureId = String(
+        bracketMatch.fixtureId ??
+        bracketMatch.scheduledFixtureId ??
+        ""
+    ).trim();
 
-      return (
-        (matchHome === homeName && matchAway === awayName) ||
-        (matchHome === awayName && matchAway === homeName)
-      );
-    }) || null;
-  }
+    const bracketMatchId = String(
+        bracketMatch.matchId ??
+        bracketMatch.id ??
+        ""
+    ).trim();
+
+    const sameTeams = match => {
+        const matchHome = String(
+            teamLabelOfMatch(match, "home") ?? ""
+        ).trim().toLowerCase();
+
+        const matchAway = String(
+            teamLabelOfMatch(match, "away") ?? ""
+        ).trim().toLowerCase();
+
+        return (
+            (matchHome === homeName && matchAway === awayName) ||
+            (matchHome === awayName && matchAway === homeName)
+        );
+    };
+
+    // Prefer an exact fixture match when the bracket stores its ID.
+    if (bracketFixtureId) {
+        const exactFixtureResult = results.find(match => {
+            const fixtureId = String(
+                match.fixtureId ??
+                match.scheduledFixtureId ??
+                match.sourceFixtureId ??
+                match.fixture?.id ??
+                ""
+            ).trim();
+
+            return fixtureId === bracketFixtureId &&
+                sameTeams(match);
+        });
+
+        if (exactFixtureResult) return exactFixtureResult;
+    }
+
+    // Otherwise, only accept an exact match ID if one is available.
+    if (bracketMatchId) {
+        const exactMatchResult = results.find(match => {
+            const matchId = String(
+                match.id ??
+                match.matchId ??
+                ""
+            ).trim();
+
+            return matchId === bracketMatchId &&
+                sameTeams(match);
+        });
+
+        if (exactMatchResult) return exactMatchResult;
+    }
+
+    // Do not guess by team names alone: that could import a League
+    // result into a Knockout match between the same teams.
+    return null;
+}
 
   function updateBracket(rounds, results) {
-    rounds.forEach((round, roundIndex) => {
-      round.matches.forEach(match => {
-        match.homeScore = null;
-        match.awayScore = null;
-        match.winnerId = null;
-        match.winnerName = null;
+  rounds.forEach((round, roundIndex) => {
+    round.matches.forEach(match => {
+      match.homeScore = null;
+      match.awayScore = null;
+      match.winnerId = null;
+      match.winnerName = null;
 
-        if (!match.homeId && match.awayId) {
-          match.winnerId = match.awayId;
-          match.winnerName = match.awayName;
-          return;
+      if (!match.homeId && match.awayId) {
+        match.winnerId = match.awayId;
+        match.winnerName = match.awayName;
+        return;
+      }
+
+      if (!match.awayId && match.homeId) {
+        match.winnerId = match.homeId;
+        match.winnerName = match.homeName;
+        return;
+      }
+
+      if (!match.homeId || !match.awayId) return;
+
+      let homeScore = null;
+      let awayScore = null;
+      let hasResult = false;
+
+      // Match Center-এর ফলাফল কেবল explicit ID match হলে গ্রহণ
+      const linkedResult = findBracketResult(match, results);
+
+      if (linkedResult && isCompleted(linkedResult)) {
+        const resultHome = scoreOf(linkedResult, "home");
+        const resultAway = scoreOf(linkedResult, "away");
+
+        if (resultHome !== null && resultAway !== null) {
+          const resultHomeId = teamIdOfMatch(linkedResult, "home");
+          const resultAwayId = teamIdOfMatch(linkedResult, "away");
+
+          if (
+            sameId(resultHomeId, match.homeId) &&
+            sameId(resultAwayId, match.awayId)
+          ) {
+            homeScore = resultHome;
+            awayScore = resultAway;
+            hasResult = true;
+          } else if (
+            sameId(resultHomeId, match.awayId) &&
+            sameId(resultAwayId, match.homeId)
+          ) {
+            homeScore = resultAway;
+            awayScore = resultHome;
+            hasResult = true;
+          }
         }
+      }
 
-        if (!match.awayId && match.homeId) {
-          match.winnerId = match.homeId;
-          match.winnerName = match.homeName;
-          return;
+      // Explicit Match Center result না থাকলে Bracket-এর saved score
+      if (!hasResult && match.manualCompleted === true) {
+        const manualHome = Number(match.manualHomeScore);
+        const manualAway = Number(match.manualAwayScore);
+
+        if (
+          Number.isFinite(manualHome) &&
+          Number.isFinite(manualAway) &&
+          manualHome >= 0 &&
+          manualAway >= 0
+        ) {
+          homeScore = manualHome;
+          awayScore = manualAway;
+          hasResult = true;
         }
+      }
 
-        if (!match.homeId || !match.awayId) return;
+      if (!hasResult) return;
 
-        const result = findBracketResult(match, results);
-        if (!result) return;
+      match.homeScore = homeScore;
+      match.awayScore = awayScore;
 
-        const homeScore = scoreOf(result, "home");
-        const awayScore = scoreOf(result, "away");
+      // ড্র হলে knockout winner নির্ধারণ করা হবে না
+      if (homeScore === awayScore) return;
 
-        if (homeScore === null || awayScore === null || homeScore === awayScore) {
-          match.homeScore = homeScore;
-          match.awayScore = awayScore;
-          return;
-        }
-
-        const resultHomeName = teamLabelOfMatch(result, "home").toLowerCase();
-        const homeIsSame = resultHomeName ===
-          String(match.homeName).toLowerCase();
-
-        match.homeScore = homeIsSame ? homeScore : awayScore;
-        match.awayScore = homeIsSame ? awayScore : homeScore;
-
-        if (match.homeScore > match.awayScore) {
-          match.winnerId = match.homeId;
-          match.winnerName = match.homeName;
-        } else {
-          match.winnerId = match.awayId;
-          match.winnerName = match.awayName;
-        }
-      });
-
-      if (roundIndex < rounds.length - 1) {
-        const nextRound = rounds[roundIndex + 1];
-        const winners = round.matches.map(match =>
-          match.winnerId
-            ? { id: match.winnerId, name: match.winnerName }
-            : null
-        );
-
-        nextRound.matches.forEach((nextMatch, index) => {
-          const home = winners[index * 2] || null;
-          const away = winners[index * 2 + 1] || null;
-
-          nextMatch.homeId = home?.id ?? null;
-          nextMatch.homeName = home?.name ?? null;
-          nextMatch.awayId = away?.id ?? null;
-          nextMatch.awayName = away?.name ?? null;
-        });
+      if (homeScore > awayScore) {
+        match.winnerId = match.homeId;
+        match.winnerName = match.homeName;
+      } else {
+        match.winnerId = match.awayId;
+        match.winnerName = match.awayName;
       }
     });
 
-    return rounds;
+    if (roundIndex < rounds.length - 1) {
+      const nextRound = rounds[roundIndex + 1];
+
+      const winners = round.matches.map(match =>
+        match.winnerId
+          ? {
+              id: match.winnerId,
+              name: match.winnerName
+            }
+          : null
+      );
+
+      nextRound.matches.forEach((nextMatch, index) => {
+        const home = winners[index * 2] || null;
+        const away = winners[index * 2 + 1] || null;
+
+        // নতুন দল এলে পুরোনো ম্যাচের স্কোর আর প্রযোজ্য নয়
+        const changedHome = !sameId(
+          nextMatch.homeId,
+          home?.id ?? null
+        );
+
+        const changedAway = !sameId(
+          nextMatch.awayId,
+          away?.id ?? null
+        );
+
+        if (changedHome || changedAway) {
+          nextMatch.manualHomeScore = null;
+          nextMatch.manualAwayScore = null;
+          nextMatch.manualCompleted = false;
+          nextMatch.fixtureId = null;
+          nextMatch.matchId = null;
+        }
+
+        nextMatch.homeId = home?.id ?? null;
+        nextMatch.homeName = home?.name ?? null;
+        nextMatch.awayId = away?.id ?? null;
+        nextMatch.awayName = away?.name ?? null;
+      });
+    }
+  });
+
+  return rounds;
+}
+
+
+function syncBracketFixtures(tournament, state) {
+  if (!tournament || !state?.bracket?.length) return false;
+
+  const tournamentId = idOf(tournament);
+  const fixtures = asArray(read(STORAGE.fixtures));
+  let changed = false;
+
+  state.bracket.forEach(round => {
+    round.matches.forEach(match => {
+      // দুই দল নির্ধারিত না হলে Fixture তৈরি করবে না।
+      if (!match.homeId || !match.awayId) return;
+
+      const fixtureId =
+        `mc-bracket-${tournamentId}-${match.id}`;
+
+      let fixture = fixtures.find(item =>
+        String(item.id ?? item.fixtureId ?? "") === fixtureId
+      );
+
+      const teamsChanged = fixture && (
+        !sameId(
+          fixture.homeTeamId ?? fixture.homeId,
+          match.homeId
+        ) ||
+        !sameId(
+          fixture.awayTeamId ?? fixture.awayId,
+          match.awayId
+        )
+      );
+
+      if (!fixture) {
+        fixture = {
+          id: fixtureId,
+          fixtureId,
+          matchId: fixtureId,
+          tournamentId,
+          tournamentName: tournamentName(tournament),
+          date: "",
+          time: "",
+          venue: "",
+          status: "scheduled",
+          matchStatus: "Scheduled",
+          homeScore: null,
+          awayScore: null,
+          resultSaved: false
+        };
+
+        fixtures.push(fixture);
+        changed = true;
+      }
+
+      if (teamsChanged) {
+        fixture.homeScore = null;
+        fixture.awayScore = null;
+        fixture.score = "";
+        fixture.status = "scheduled";
+        fixture.matchStatus = "Scheduled";
+        fixture.resultSaved = false;
+        fixture.resultSource = "";
+        fixture.resultSessionId = "";
+        fixture.completedAt = null;
+        changed = true;
+      }
+
+      const values = {
+        fixtureId,
+        matchId: fixtureId,
+        tournamentId,
+        tournamentName: tournamentName(tournament),
+        homeTeamId: match.homeId,
+        awayTeamId: match.awayId,
+        homeId: match.homeId,
+        awayId: match.awayId,
+        homeTeamName: match.homeName,
+        awayTeamName: match.awayName,
+        homeName: match.homeName,
+        awayName: match.awayName,
+        bracketMatchId: match.id,
+        bracketRound: round.name
+      };
+
+      Object.entries(values).forEach(([key, value]) => {
+        if (!sameId(fixture[key], value)) {
+          fixture[key] = value;
+          changed = true;
+        }
+      });
+
+      if (!sameId(match.fixtureId, fixtureId)) {
+        match.fixtureId = fixtureId;
+        match.matchId = fixtureId;
+        changed = true;
+      }
+    });
+  });
+
+  if (changed) {
+    write(STORAGE.fixtures, fixtures);
+    write(STORAGE.fixturesAlt, fixtures);
+    write(STORAGE.scheduled, fixtures);
   }
+
+  return changed;
+}
+
+
+function saveBracketScore(roundId, matchId) {
+  const tournament = selectedTournament();
+
+  if (!tournament) {
+    alert("প্রথমে একটি টুর্নামেন্ট নির্বাচন করুন।");
+    return;
+  }
+
+  const homeInput = $(
+    `[data-br-home-score="${matchId}"]`,
+    root
+  );
+
+  const awayInput = $(
+    `[data-br-away-score="${matchId}"]`,
+    root
+  );
+
+  if (!homeInput || !awayInput) return;
+
+  const homeRaw = homeInput.value.trim();
+  const awayRaw = awayInput.value.trim();
+
+  if (homeRaw === "" || awayRaw === "") {
+    alert("দুই দলের স্কোরই লিখুন।");
+    return;
+  }
+
+  const homeScore = Number(homeRaw);
+  const awayScore = Number(awayRaw);
+
+  if (
+    !Number.isInteger(homeScore) ||
+    !Number.isInteger(awayScore) ||
+    homeScore < 0 ||
+    awayScore < 0
+  ) {
+    alert("স্কোর অবশ্যই শূন্য বা তার বেশি পূর্ণসংখ্যা হতে হবে।");
+    return;
+  }
+
+  const allState = getState();
+  const state = tournamentState(allState, idOf(tournament));
+
+  const round = state.bracket.find(item =>
+    sameId(item.id, roundId)
+  );
+
+  const match = round?.matches?.find(item =>
+    sameId(item.id, matchId)
+  );
+
+  if (!match || !match.homeId || !match.awayId) {
+    alert("এই ম্যাচের দুই দল এখনো নির্ধারিত হয়নি।");
+    return;
+  }
+
+  match.manualHomeScore = homeScore;
+  match.manualAwayScore = awayScore;
+  match.manualCompleted = true;
+
+  allState[idOf(tournament)] = state;
+  saveState(allState);
+
+  renderPage();
+
+  if (homeScore === awayScore) {
+    alert(
+      "স্কোর সংরক্ষিত হয়েছে। স্কোর সমান, তাই Knockout বিজয়ী নির্ধারণ করা যায়নি।"
+    );
+  } else {
+    alert("স্কোর সংরক্ষিত হয়েছে এবং বিজয়ী আপডেট করা হয়েছে।");
+  }
+}
 
   function formatLabel(type) {
     if (type.includes("knockout")) return "Knockout";
@@ -860,100 +1282,218 @@
     host.appendChild(qualificationInfo);
   }
 
-  function renderBracket(tournament, teams, results, state) {
-    const host = $("#brBracketContent", root);
-    const type = tournamentType(tournament);
+ function renderBracket(tournament, teams, results, state) {
+  const host = $("#brBracketContent", root);
+  const type = tournamentType(tournament);
 
-    const shouldShow = hasKnockout(type);
-    $("#brBracketPanel", root).hidden = !shouldShow;
+  const shouldShow = hasKnockout(type);
+  $("#brBracketPanel", root).hidden = !shouldShow;
 
-    if (!shouldShow) {
-      $("#brChampionPanel", root).innerHTML = "";
-      $("#brChampionPanel", root).hidden = true;
-      return;
-    }
+  if (!shouldShow) {
+    $("#brChampionPanel", root).innerHTML = "";
+    $("#brChampionPanel", root).hidden = true;
+    return;
+  }
 
-    if (!state.bracket?.length) {
-      host.innerHTML = `
-        <div class="br-empty">
-          <i class="fa-solid fa-diagram-project"></i>
-          <h3>Bracket not created</h3>
-          <p>Create a bracket after selecting tournament teams or completing a group draw.</p>
-        </div>
-      `;
-      $("#brChampionPanel", root).hidden = true;
-      return;
-    }
-
-    const updatedBracket = updateBracket(
-      JSON.parse(JSON.stringify(state.bracket)),
-      results
-    );
-
-    state.bracket = updatedBracket;
-
-    const lastRound = updatedBracket[updatedBracket.length - 1];
-    const finalMatch = lastRound?.matches?.[0];
-
-    state.championId = finalMatch?.winnerId ?? null;
-    state.championName = finalMatch?.winnerName ?? null;
-
+  if (!state.bracket?.length) {
     host.innerHTML = `
-      <div class="br-bracket-scroll">
-        <div class="br-bracket">
-          ${updatedBracket.map(round => `
-            <div class="br-round">
-              <div class="br-round-title">${text(round.name)}</div>
-              <div class="br-round-matches">
-                ${round.matches.map(match => `
-                  <article class="br-bracket-match">
-                    <div class="br-bracket-team ${match.winnerId && sameId(match.winnerId, match.homeId) ? "br-winner" : ""}">
-                      <span>${text(match.homeName || "To be decided")}</span>
-                      <strong>${match.homeScore ?? "—"}</strong>
-                    </div>
-                    <div class="br-bracket-team ${match.winnerId && sameId(match.winnerId, match.awayId) ? "br-winner" : ""}">
-                      <span>${text(match.awayName || "To be decided")}</span>
-                      <strong>${match.awayScore ?? "—"}</strong>
-                    </div>
-                    <div class="br-bracket-status">
-                      ${match.winnerName
-                        ? `<i class="fa-solid fa-check"></i> Winner: ${text(match.winnerName)}`
-                        : "Awaiting completed result"}
-                    </div>
-                  </article>
-                `).join("")}
-              </div>
-            </div>
-          `).join("")}
-        </div>
+      <div class="br-empty">
+        <i class="fa-solid fa-diagram-project"></i>
+        <h3>Bracket not created</h3>
+        <p>Create a bracket after selecting tournament teams or completing a group draw.</p>
       </div>
     `;
 
-    const championPanel = $("#brChampionPanel", root);
-    championPanel.hidden = false;
-
-    if (state.championName) {
-      championPanel.innerHTML = `
-        <div class="br-champion-icon"><i class="fa-solid fa-trophy"></i></div>
-        <div>
-          <p class="br-eyebrow">TOURNAMENT CHAMPION</p>
-          <h2>${text(state.championName)}</h2>
-          <p>Congratulations to the winning team!</p>
-        </div>
-      `;
-    } else {
-      championPanel.innerHTML = `
-        <div class="br-champion-icon"><i class="fa-solid fa-trophy"></i></div>
-        <div>
-          <p class="br-eyebrow">CHAMPION</p>
-          <h2>Not decided yet</h2>
-          <p>The champion will appear when the final has a completed, decisive result.</p>
-        </div>
-      `;
-    }
-
-    saveState(getState());
+    $("#brChampionPanel", root).hidden = true;
+    return;
   }
+
+  // Match Center-এর ফলাফল অনুযায়ী bracket আপডেট
+  const updatedBracket = updateBracket(
+    JSON.parse(JSON.stringify(state.bracket)),
+    results
+  );
+
+  state.bracket = updatedBracket;
+
+  // ফাইনালের ফলাফল থেকে Champion নির্ধারণ
+  const lastRound = updatedBracket[updatedBracket.length - 1];
+  const finalMatch = lastRound?.matches?.[0];
+
+  state.championId = finalMatch?.winnerId ?? null;
+  state.championName = finalMatch?.winnerName ?? null;
+
+  // দলের লোগোসহ bracket render
+  host.innerHTML = `
+    <div class="br-bracket-scroll">
+      <div class="br-bracket">
+        ${updatedBracket.map(round => `
+          <div class="br-round">
+            <div class="br-round-title">
+              ${text(round.name)}
+            </div>
+
+            <div class="br-round-matches">
+              ${round.matches.map(match => {
+                const homeLogo = teamLogoById(match.homeId);
+                const awayLogo = teamLogoById(match.awayId);
+
+                return `
+                  <article class="br-bracket-match">
+
+                    <div class="br-bracket-team ${
+                      match.winnerId &&
+                      sameId(match.winnerId, match.homeId)
+                        ? "br-winner" : ""
+                    }">
+                      <span class="br-bracket-team-info">
+                        ${
+                          homeLogo
+                            ? `
+                              <img
+                                class="br-team-logo"
+                                src="${text(homeLogo)}"
+                                alt=""
+                                width="28"
+                                height="28"
+                              >
+                            `
+                            : ""
+                        }
+                        <span>
+                          ${text(match.homeName || "To be decided")}
+                        </span>
+                      </span>
+
+                      <strong>${match.homeScore ?? "—"}</strong>
+                    </div>
+
+                    <div class="br-bracket-team ${
+                      match.winnerId &&
+                      sameId(match.winnerId, match.awayId)
+                        ? "br-winner" : ""
+                    }">
+                      <span class="br-bracket-team-info">
+                        ${
+                          awayLogo
+                            ? `
+                              <img
+                                class="br-team-logo"
+                                src="${text(awayLogo)}"
+                                alt=""
+                                width="28"
+                                height="28"
+                              >
+                            `
+                            : ""
+                        }
+                        <span>
+                          ${text(match.awayName || "To be decided")}
+                        </span>
+                      </span>
+
+                      <strong>${match.awayScore ?? "—"}</strong>
+                    </div>
+
+                    ${
+                      match.homeId && match.awayId
+                        ? `
+                          <div class="br-score-editor">
+                            <label>
+                              <span>
+                                ${text(match.homeName)} score
+                              </span>
+                              <input
+                                type="number"
+                                min="0"
+                                step="1"
+                                inputmode="numeric"
+                                data-br-home-score="${text(match.id)}"
+                                value="${match.manualHomeScore ?? ""}"
+                                aria-label="${text(match.homeName)} score"
+                              >
+                            </label>
+
+                            <label>
+                              <span>
+                                ${text(match.awayName)} score
+                              </span>
+                              <input
+                                type="number"
+                                min="0"
+                                step="1"
+                                inputmode="numeric"
+                                data-br-away-score="${text(match.id)}"
+                                value="${match.manualAwayScore ?? ""}"
+                                aria-label="${text(match.awayName)} score"
+                              >
+                            </label>
+
+                            <button
+                              type="button"
+                              class="br-btn br-btn-primary"
+                              data-br-save-round="${text(round.id)}"
+                              data-br-save-match="${text(match.id)}"
+                            >
+                              Save Score
+                            </button>
+                          </div>
+                        `
+                        : ""
+                    }
+
+                    <div class="br-bracket-status">
+                      ${
+                        match.winnerName
+                          ? `<i class="fa-solid fa-check"></i>
+                             Winner: ${text(match.winnerName)}`
+                          : "Awaiting completed result"
+                      }
+                    </div>
+
+                  </article>
+                `;
+              }).join("")}
+            </div>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `;
+
+  // Champion panel
+  const championPanel = $("#brChampionPanel", root);
+  championPanel.hidden = false;
+
+  if (state.championName) {
+    championPanel.innerHTML = `
+      <div class="br-champion-icon">
+        <i class="fa-solid fa-trophy"></i>
+      </div>
+
+      <div>
+        <p class="br-eyebrow">TOURNAMENT CHAMPION</p>
+        <h2>${text(state.championName)}</h2>
+        <p>Congratulations to the winning team!</p>
+      </div>
+    `;
+  } else {
+    championPanel.innerHTML = `
+      <div class="br-champion-icon">
+        <i class="fa-solid fa-trophy"></i>
+      </div>
+
+      <div>
+        <p class="br-eyebrow">CHAMPION</p>
+        <h2>Not decided yet</h2>
+        <p>
+          The champion will appear when the final has a completed,
+          decisive result.
+        </p>
+      </div>
+    `;
+  }
+}
 
   function renderPage() {
     ensureTournamentOptions();
@@ -988,10 +1528,52 @@
     const allState = getState();
     const state = tournamentState(allState, idOf(tournament));
 
+    // Show only the controls supported by this format.
+    $("#brDrawGroups", root).hidden = !hasGroups(type);
+    $("#brCreateBracket", root).hidden = !hasKnockout(type);
+
+    // Automatically create the first bracket for pure Knockout.
+    // Never overwrite an existing bracket automatically.
+    if (
+      hasKnockout(type) &&
+      !hasGroups(type) &&
+      !state.bracket?.length &&
+      teams.length >= 2
+    ) {
+      state.bracket = buildBracket(
+        teams.map(team => ({
+          id: idOf(team),
+          name: nameOf(team)
+        }))
+      );
+
+      state.championId = null;
+      state.championName = null;
+
+      allState[idOf(tournament)] = state;
+      saveState(allState);
+    }
+
     renderStats(tournament, teams, results, state);
-    renderGroups(tournament, results, state);
-    renderLeague(tournament, teams, results);
-    renderBracket(tournament, teams, results, state);
+renderGroups(tournament, results, state);
+renderLeague(tournament, teams, results);
+renderBracket(tournament, teams, results, state);
+
+// Bracket-এর আপডেট করা State সংরক্ষণ
+allState[idOf(tournament)] = state;
+
+// Bracket ম্যাচের সঙ্গে Fixture ID যুক্ত করা
+const fixturesChanged = syncBracketFixtures(tournament, state);
+
+allState[idOf(tournament)] = state;
+saveState(allState);
+
+// একই পেজে Match Center-কে Fixture পরিবর্তনের খবর দেওয়া
+if (fixturesChanged) {
+  window.dispatchEvent(
+    new CustomEvent("matchcraft:fixtures-updated")
+  );
+}
   }
 
   function createGroupDraw() {
@@ -1119,16 +1701,37 @@
   }
 
   function bindEvents() {
-    $("#brTournamentSelect", root)?.addEventListener("change", renderPage);
+  $("#brTournamentSelect", root)?.addEventListener(
+    "change",
+    renderPage
+  );
 
-    $("#brRefresh", root)?.addEventListener("click", () => {
-      renderPage();
-    });
+  $("#brRefresh", root)?.addEventListener("click", () => {
+    renderPage();
+  });
 
-    $("#brDrawGroups", root)?.addEventListener("click", createGroupDraw);
+  $("#brDrawGroups", root)?.addEventListener(
+    "click",
+    createGroupDraw
+  );
 
-    $("#brCreateBracket", root)?.addEventListener("click", createOrUpdateBracket);
-  }
+  $("#brCreateBracket", root)?.addEventListener(
+    "click",
+    createOrUpdateBracket
+  );
+
+  // Event delegation: Bracket পুনরায় render হলেও Save কাজ করবে।
+  $("#brBracketContent", root)?.addEventListener("click", event => {
+    const button = event.target.closest("[data-br-save-match]");
+
+    if (!button) return;
+
+    saveBracketScore(
+      button.dataset.brSaveRound,
+      button.dataset.brSaveMatch
+    );
+  });
+}
 
   function refresh() {
     renderPage();

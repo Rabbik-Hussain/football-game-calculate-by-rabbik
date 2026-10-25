@@ -1442,19 +1442,23 @@
       }
     });
 
-    window.addEventListener("matchcraft:teams-updated", () => {
-      refreshTeamOptions();
-      renderFixtures();
+   window.addEventListener("matchcraft:teams-updated", () => {
+        refreshTeamOptions();
+        renderFixtures();
     });
 
     window.addEventListener("matchcraft:tournaments-updated", () => {
-      refreshTournamentOptions();
-      refreshTeamOptions();
-      renderFixtures();
+        refreshTournamentOptions();
+        refreshTeamOptions();
+        renderFixtures();
     });
 
     window.addEventListener("matchcraft:fixtures-updated", () => {
-      renderFixtures();
+        renderFixtures();
+
+        if (typeof updateDashboardStats === "function") {
+            updateDashboardStats();
+        }
     });
   }
 
